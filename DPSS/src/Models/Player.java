@@ -10,14 +10,16 @@ public class Player {
     private String password;
     private String IPAddress;
 
+    private boolean signedIn;
 
-    public Player(String firstName, String lastName, int age, String userName, String password, String IPAddress) {
+    public Player(String firstName, String lastName, int age, String userName, String password, String IPAddress, Boolean signedIn) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.userName = userName;
         this.password = password;
         this.IPAddress = IPAddress;
+        this.signedIn = false;
     }
 
 
@@ -68,4 +70,13 @@ public class Player {
     public void setIPAddress(String IPAddress) {
         this.IPAddress = IPAddress;
     }
+
+    public boolean isSignedIn() {
+        return signedIn;
+    }
+
+    public void setSignedIn(boolean signedIn) {
+        this.signedIn = signedIn;
+    }
+
 }

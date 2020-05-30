@@ -6,6 +6,15 @@ public class Admin {
     private String password;
     private String IPAddress;
 
+    @Override
+    public String toString() {
+        return "Admin{" +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", IPAddress='" + IPAddress + '\'' +
+                '}';
+    }
+
     public Admin(String userName, String password, String IPAddress) {
         this.userName = userName;
         this.password = password;

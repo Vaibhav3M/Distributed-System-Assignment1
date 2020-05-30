@@ -1,6 +1,9 @@
 package Models;
 
+import java.io.Serializable;
+
 public class Player {
+
 
     private String firstName;
     private String lastName;
@@ -11,6 +14,20 @@ public class Player {
     private String IPAddress;
 
     private boolean signedIn;
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", IPAddress='" + IPAddress + '\'' +
+                ", signedIn=" + signedIn +
+                '}';
+    }
+
 
     public Player(String firstName, String lastName, int age, String userName, String password, String IPAddress, Boolean signedIn) {
         this.firstName = firstName;

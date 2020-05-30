@@ -1,35 +1,36 @@
 package GameServers.AmericaServer;
 
-import GameServers.DPSS_GameServerInterface;
-import Models.Player;
+import Constants.Constants;
+import GameServers.DPSS_GameServerImplementation;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class AmericaGameServer extends UnicastRemoteObject implements DPSS_GameServerInterface {
+public class AmericaGameServer {
 
-    protected AmericaGameServer() throws RemoteException {
-        super();
+
+    public static void main(String args[]) throws Exception{
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    DPSS_GameServerImplementation serverImplementation = new DPSS_GameServerImplementation();
+                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_AMERICA);
+
+                    registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);
+
+                    System.out.println(Constants.SERVER_IP_PORT_AMERICA + " started..!!!");
+                }
+                catch (Exception e){
+                    System.out.println(e.getLocalizedMessage());
+                }
+
+            }
+        }).start();
+
+
     }
 
-    @Override
-    public String createPlayerAccount(String FirstName, String LastName, int Age, String Username, String Password, String IPAddress) {
-
-        return null;
-    }
-
-    @Override
-    public String playerSignIn(String Username, String Password, String IPAddress) {
-        return null;
-    }
-
-    @Override
-    public String playerSignOut(String Username, String IPAddress) {
-        return null;
-    }
-
-    @Override
-    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) {
-        return null;
-    }
 }

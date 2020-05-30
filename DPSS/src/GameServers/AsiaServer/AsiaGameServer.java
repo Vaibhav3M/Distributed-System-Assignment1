@@ -1,33 +1,31 @@
 package GameServers.AsiaServer;
 
-import GameServers.DPSS_GameServerInterface;
+import Constants.Constants;
+import GameServers.DPSS_GameServerImplementation;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class AsiaGameServer extends UnicastRemoteObject implements DPSS_GameServerInterface {
+public class AsiaGameServer {
 
-    protected AsiaGameServer() throws RemoteException {
-        super();
-    }
+    public static void main(String args[]) throws Exception{
 
-    @Override
-    public String createPlayerAccount(String FirstName, String LastName, int Age, String Username, String Password, String IPAddress) {
-        return null;
-    }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-    @Override
-    public String playerSignIn(String Username, String Password, String IPAddress) {
-        return null;
-    }
+                try {
+                    DPSS_GameServerImplementation serverImplementation = new DPSS_GameServerImplementation();
+                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_ASIA);
 
-    @Override
-    public String playerSignOut(String Username, String IPAddress) {
-        return null;
-    }
+                    registry.bind(Constants.SERVER_NAME_ASIA, serverImplementation);
 
-    @Override
-    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) {
-        return null;
+                    System.out.println(Constants.SERVER_NAME_ASIA + " started..!!!");
+                } catch (Exception e) {
+                    System.out.println(e.getLocalizedMessage());
+                }
+            }
+        }).start();
+
     }
 }

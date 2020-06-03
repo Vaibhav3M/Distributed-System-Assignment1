@@ -79,7 +79,30 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     @Override
     public String playerSignOut(String Username, String IPAddress) throws RemoteException {
 
-        return null;
+        char playerKey = Username.charAt(0);
+
+        if(playersTable.containsKey(playerKey)){
+
+            ArrayList<Player> playerList = playersTable.get(playerKey);
+
+            for(int i = 0; i < playerList.size(); i++) {
+                Player currPlayer = (Player) playerList.get(i);
+                if(currPlayer.getUserName().equalsIgnoreCase(Username)){
+
+                    currPlayer.setSignedIn(false);
+                    playerList.remove(i);
+                    playerList.add(currPlayer);
+                    playersTable.put(playerKey,playerList);
+
+                    return currPlayer.getUserName() + " has logged out.";
+                }
+            }
+        }
+        else{
+            return "User not found";
+        }
+
+        return "Error occurred. Please try again";
     }
 
 }

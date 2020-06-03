@@ -1,10 +1,10 @@
 package GameServers.AmericaServer;
 
 import Constants.Constants;
-import GameServers.DPSS_GameServerImplementation;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
 
 public class AmericaGameServer {
 
@@ -16,7 +16,7 @@ public class AmericaGameServer {
             public void run() {
 
                 try {
-                    DPSS_GameServerImplementation serverImplementation = new DPSS_GameServerImplementation();
+                    AmericanGameServerImpl serverImplementation = new AmericanGameServerImpl();
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_AMERICA);
 
                     registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);

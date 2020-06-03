@@ -1,7 +1,6 @@
 package GameServers.EuropeServer;
 
 import Constants.Constants;
-import GameServers.DPSS_GameServerImplementation;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -14,7 +13,7 @@ public class EuropeGameServer {
             @Override
             public void run() {
                 try{
-                DPSS_GameServerImplementation serverImplementation = new DPSS_GameServerImplementation();
+                EuropeGameServerImpl serverImplementation = new EuropeGameServerImpl();
                 Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_EUROPE);
 
                 registry.bind(Constants.SERVER_NAME_EUROPE, serverImplementation);

@@ -1,7 +1,6 @@
 package GameServers.AsiaServer;
 
 import Constants.Constants;
-import GameServers.DPSS_GameServerImplementation;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,7 +14,7 @@ public class AsiaGameServer {
             public void run() {
 
                 try {
-                    DPSS_GameServerImplementation serverImplementation = new DPSS_GameServerImplementation();
+                    AsianGameServerImpl serverImplementation = new AsianGameServerImpl();
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_ASIA);
 
                     registry.bind(Constants.SERVER_NAME_ASIA, serverImplementation);

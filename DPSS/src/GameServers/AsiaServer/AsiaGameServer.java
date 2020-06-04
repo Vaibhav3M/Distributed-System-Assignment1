@@ -21,6 +21,7 @@ public class AsiaGameServer {
             dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_ASIA);
             byte[] buffer = new byte[1000];
 
+            System.out.println(Constants.SERVER_NAME_ASIA + " started..!!!");
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
@@ -60,7 +61,6 @@ public class AsiaGameServer {
                     //UDP setup
                     recieve(serverImplementation);
 
-                    System.out.println(Constants.SERVER_NAME_ASIA + " started..!!!");
                 } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
                 }

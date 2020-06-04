@@ -11,11 +11,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class Client {
+public class PlayerClient {
 
-    private static Scanner scanner = new Scanner(System.in);
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
-    private static String client_type = "Admin";
     private static int client_IP_Address = 132;
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;

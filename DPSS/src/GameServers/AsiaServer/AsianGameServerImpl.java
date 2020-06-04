@@ -1,5 +1,6 @@
 package GameServers.AsiaServer;
 
+import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
 
@@ -103,6 +104,35 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         }
 
         return "Error occurred. Please try again";
+    }
+
+    @Override
+    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) throws RemoteException {
+
+        if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
+            return "Username or password incorrect." + AdminUsername + " " + AdminPassword;
+        }
+
+        String response = Constants.SERVER_NAME_ASIA +  " has : ";
+        int onlineCount = 0;
+        int offlineCount = 0;
+
+        for(char key:playersTable.keySet()){
+            for(Player p:playersTable.get(key)){
+                if(p.isSignedIn())  onlineCount++;
+                else offlineCount++;
+            }
+        }
+
+//        playersTable.forEach((k,v) -> {
+//            for(Player p:v){
+//                if(p.isSignedIn())  onlineCount++;
+//                else offlineCount++;
+//            }
+//        });
+
+        response = response + onlineCount + " online, " + offlineCount + " offline";
+        return response;
     }
 
 }

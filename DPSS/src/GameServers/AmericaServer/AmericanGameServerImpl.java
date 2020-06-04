@@ -105,4 +105,9 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         return "Error occurred. Please try again";
     }
 
+    @Override
+    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) throws RemoteException {
+        return null;
+    }
+
 }

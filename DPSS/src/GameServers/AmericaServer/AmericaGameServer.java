@@ -21,7 +21,7 @@ public class AmericaGameServer {
 
                     registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);
 
-                    System.out.println(Constants.SERVER_IP_PORT_AMERICA + " started..!!!");
+                    System.out.println(Constants.SERVER_NAME_AMERICA + " started..!!!");
                 }
                 catch (Exception e){
                     System.out.println(e.getLocalizedMessage());

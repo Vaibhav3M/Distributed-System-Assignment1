@@ -110,7 +110,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) throws RemoteException {
 
         if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
-            return "Username or password incorrect." + AdminUsername + " " + AdminPassword;
+            return "Username or password incorrect.";
         }
 
         String response = Constants.SERVER_NAME_ASIA +  " has : ";

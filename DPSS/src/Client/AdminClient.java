@@ -93,6 +93,7 @@ public class AdminClient {
                     break;
 
                 case 2:
+                    System.out.println();
                     getUDPResponse();
                     break;
 
@@ -123,7 +124,7 @@ public class AdminClient {
             DatagramPacket serverResponse = new DatagramPacket(buffer,buffer.length);
             datagramSocket.receive(serverResponse);
 
-            System.out.println("Player info: " + new String(serverResponse.getData()));
+            System.out.println(new String(serverResponse.getData(),0,serverResponse.getLength()));
 
         }catch (SocketException e){
             System.out.println("Socket creation failed due to: " + e.getLocalizedMessage());

@@ -24,7 +24,7 @@ public class AsiaGameServer {
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
-                String credentials = new String(request.getData());
+                String credentials = new String(request.getData(),0,request.getLength());
                 String adminUsername = credentials.split("-")[0];
                 String adminPassword = credentials.split("-")[1];
 

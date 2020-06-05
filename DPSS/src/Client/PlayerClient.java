@@ -6,9 +6,13 @@ import Models.Player;
 import Constants.Validations;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class PlayerClient {
 
@@ -16,12 +20,16 @@ public class PlayerClient {
     private static int client_IP_Address = 132;
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
+    private static Logger logger = Logger.getLogger(PlayerClient.class.getName());
+
 
     //Return basic menu.
     private static int showMenu() throws Exception
     {
-        System.out.println("\n**** Welcome to DPSS Game ****\n");
+        initLogger(logger,"");
 
+        System.out.println("\n**** Welcome to DPSS Game ****\n");
+        logger.info("New session started ");
         int userinput = 1;
 
         System.out.println("Please select an option (1-4)");
@@ -36,6 +44,7 @@ public class PlayerClient {
                 System.out.print("Please select an Option : ");
                 userinput = Integer.valueOf(reader.readLine());
                 inputValid = true;
+                logger.info("User selected " +userinput);
             }catch (Exception e){
                 System.out.println("Oops..! Invalid input. Please select 1,2,3 or 4 to perform required action");
             }
@@ -48,7 +57,7 @@ public class PlayerClient {
 
 
     public static void main(String args[]) throws Exception{
-
+        logger.setUseParentHandlers(false);
         System.out.println("Please enter IP : (132, 93, 182)");
 
         client_IP_Address = Integer.valueOf(reader.readLine());
@@ -86,8 +95,9 @@ public class PlayerClient {
 
                 case 1:
                     Player newPlayer = createPlayer();
-
-                    System.out.println(dpss_gameServerInterface.createPlayerAccount(newPlayer));
+                    String result = dpss_gameServerInterface.createPlayerAccount(newPlayer);
+                    logger.info(result);
+                    System.out.println(result);
                     break;
 
                 case 2:
@@ -166,7 +176,17 @@ public class PlayerClient {
 
         return new Player(firstName,lastName,age,userName,password,String.valueOf(client_IP_Address),false);
 
+    }
 
+    private static void initLogger(Logger log, String userID) {
+        FileHandler fileHandler;
+        try {
+            fileHandler = new FileHandler(System.getProperty("user.dir") + "\\LogFiles\\"  + ".log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+           // log.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -154,7 +154,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                 response[0] = sendReceiveUDPMessage.getUDPResponse("", serverPort);
 
             } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
+                System.out.println("At getPlayerStatus: " + e.getLocalizedMessage());
             }
 
         });
@@ -165,7 +165,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         try{
             UDPThread.join();
         }catch (Exception e){
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("At getPlayerStatus:" + e.getLocalizedMessage());
         }
 
         return response[0];

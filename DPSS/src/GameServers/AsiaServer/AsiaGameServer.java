@@ -28,7 +28,7 @@ public class AsiaGameServer {
                 String requestMessage = new String(request.getData(),0,request.getLength());
 
                 if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
-                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],Constants.SERVER_NAME_AMERICA);
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_ASIA));
                 } else {
                     responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
                 }
@@ -38,9 +38,9 @@ public class AsiaGameServer {
             }
 
         } catch (SocketException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Exception at socket" +e.getLocalizedMessage());
         } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Exception at IO" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
         }
@@ -62,7 +62,8 @@ public class AsiaGameServer {
                     recieve(serverImplementation);
 
                 } catch (Exception e) {
-                    System.out.println(e.getLocalizedMessage());
+                    e.printStackTrace();
+                    System.out.println("Exception at main" +e.getLocalizedMessage());
                 }
             }
         }).start();

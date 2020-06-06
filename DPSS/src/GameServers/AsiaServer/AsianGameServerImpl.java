@@ -154,7 +154,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                 response[0] = sendReceiveUDPMessage.getUDPResponse("", serverPort);
 
             } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
+                System.out.println("Exception at getplayerstatus" +e.getLocalizedMessage());
             }
 
         });
@@ -165,7 +165,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         try{
             UDPThread.join();
         }catch (Exception e){
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Exception at getplayerstatus" + e.getLocalizedMessage());
         }
 
         return response[0];
@@ -177,7 +177,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         String check_american = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_AMERICA);
         String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_EUROPE);
-        System.out.println("A " + check_american + " E " + check_europe);
+
         return !check_american.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
     }
 

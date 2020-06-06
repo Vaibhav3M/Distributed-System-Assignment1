@@ -28,7 +28,7 @@ public class AmericaGameServer {
                 String requestMessage = new String(request.getData(), 0, request.getLength());
 
                 if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
-                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],Constants.SERVER_NAME_AMERICA);
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_AMERICA));
                 } else {
                     responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
                 }
@@ -38,9 +38,9 @@ public class AmericaGameServer {
             }
 
         } catch (SocketException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Socket exception" + e.getLocalizedMessage());
         } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("IO exception" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
         }
@@ -62,7 +62,7 @@ public class AmericaGameServer {
                     recieve(serverImplementation);
 
                 } catch (Exception e) {
-                    System.out.println(e.getLocalizedMessage());
+                    System.out.println("Main exception" + e.getLocalizedMessage());
                 }
             }
         }).start();

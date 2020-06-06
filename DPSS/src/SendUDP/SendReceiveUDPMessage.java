@@ -30,9 +30,9 @@ public class SendReceiveUDPMessage {
         }catch (SocketException e){
             System.out.println("Socket creation failed due to: " + e.getLocalizedMessage());
         }catch (UnknownHostException e){
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Exception at unknown" + e.getLocalizedMessage());
         }catch (IOException e){
-            System.out.println(e.getLocalizedMessage());
+            System.out.println("Exception at IO" +e.getLocalizedMessage());
         }
         finally {
             if(datagramSocket != null) datagramSocket.close();

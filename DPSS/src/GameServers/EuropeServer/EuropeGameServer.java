@@ -28,7 +28,7 @@ public class EuropeGameServer {
                 String requestMessage = new String(request.getData(),0,request.getLength());
 
                 if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
-                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_AMERICA));
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_EUROPE));
                 } else {
                     responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
                 }

@@ -98,6 +98,7 @@ public class PlayerClient {
                     String result = dpss_gameServerInterface.createPlayerAccount(newPlayer);
                     logger.info(result);
                     System.out.println(result);
+                    Thread.sleep(100);
                     break;
 
                 case 2:
@@ -109,6 +110,7 @@ public class PlayerClient {
                     String password = reader.readLine();
 
                     System.out.println(dpss_gameServerInterface.playerSignIn(userNameLogin, password, String.valueOf(client_IP_Address)));
+                    Thread.sleep(100);
                     break;
 
                 case 3:
@@ -117,11 +119,13 @@ public class PlayerClient {
                     String userNameLogout = reader.readLine();
 
                     System.out.println(dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address)));
+                    Thread.sleep(100);
                     break;
 
                 case 4:
 
                     System.out.println("Thank you for visiting our DPSS app");
+                    Thread.sleep(100);
                     exit = true;
                     break;
 

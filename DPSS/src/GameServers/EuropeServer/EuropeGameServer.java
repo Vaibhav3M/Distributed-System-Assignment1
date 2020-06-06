@@ -18,18 +18,16 @@ public class EuropeGameServer {
 
         try {
 
-            dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_ASIA);
+            dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_EUROPE);
             byte[] buffer = new byte[1000];
 
             System.out.println(Constants.SERVER_NAME_EUROPE + " started..!!!");
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
-                String credentials = new String(request.getData(),0,request.getLength());
-                String adminUsername = credentials.split("-")[0];
-                String adminPassword = credentials.split("-")[1];
+                String requestMessage = new String(request.getData(),0,request.getLength());
 
-                responseString = serverImpl.getPlayerStatus(adminUsername,adminPassword,String.valueOf(request.getPort()));
+                responseString = serverImpl.getPlayerStatus("Admin","Admin",String.valueOf(request.getPort()),false);
 
                 DatagramPacket reply = new DatagramPacket(responseString.getBytes(), responseString.length(), request.getAddress(), request.getPort());
 
@@ -37,9 +35,8 @@ public class EuropeGameServer {
             }
 
         } catch (SocketException e) {
-
-        } catch (
-                IOException e) {
+            System.out.println(e.getLocalizedMessage());
+        } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
@@ -47,24 +44,25 @@ public class EuropeGameServer {
 
     }
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String args[]) throws Exception {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try{
-                EuropeGameServerImpl serverImplementation = new EuropeGameServerImpl();
-                Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_EUROPE);
-                registry.bind(Constants.SERVER_NAME_EUROPE, serverImplementation);
 
-                recieve(serverImplementation);
+                try {
+                    EuropeGameServerImpl serverImplementation = new EuropeGameServerImpl();
+                    //RMI setup
+                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_EUROPE);
+                    registry.bind(Constants.SERVER_NAME_EUROPE, serverImplementation);
+                    //UDP setup
+                    recieve(serverImplementation);
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
                 }
             }
         }).start();
-
 
     }
 }

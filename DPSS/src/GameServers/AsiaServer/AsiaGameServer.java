@@ -25,11 +25,11 @@ public class AsiaGameServer {
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
-                String credentials = new String(request.getData(),0,request.getLength());
-                String adminUsername = credentials.split("-")[0];
-                String adminPassword = credentials.split("-")[1];
+                String requestMessage = new String(request.getData(),0,request.getLength());
 
-                responseString = serverImpl.getPlayerStatus(adminUsername,adminPassword,String.valueOf(request.getPort()));
+                System.out.println(requestMessage);
+
+                responseString = serverImpl.getPlayerStatus("Admin","Admin",String.valueOf(request.getPort()),false);
 
                 DatagramPacket reply = new DatagramPacket(responseString.getBytes(), responseString.length(), request.getAddress(), request.getPort());
 
@@ -37,9 +37,8 @@ public class AsiaGameServer {
             }
 
         } catch (SocketException e) {
-
-        } catch (
-                IOException e) {
+            System.out.println(e.getLocalizedMessage());
+        } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();

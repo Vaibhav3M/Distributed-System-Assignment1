@@ -4,9 +4,9 @@ import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 
 public class AdminClient {
@@ -70,6 +70,8 @@ public class AdminClient {
         }
         System.out.println("LOADING SERVER......");
 
+        Registry registry = LocateRegistry.getRegistry(client_IP_Address);
+        DPSS_GameServerInterface dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
         System.out.println(client_server_name + " at " + client_IP_Address +  " Activated");
 
         boolean exit = false;
@@ -94,7 +96,8 @@ public class AdminClient {
 
                 case 2:
                     System.out.println();
-                    getUDPResponse();
+                    //getUDPResponse();
+                    System.out.println(dpss_gameServerInterface.getPlayerStatus(adminUsername,adminPassword,String.valueOf(client_IP_Address),true));
                     break;
 
                 case 3:
@@ -106,38 +109,5 @@ public class AdminClient {
         }
     }
 
-    private static void getUDPResponse() {
-
-        DatagramSocket datagramSocket = null;
-
-        try{
-            datagramSocket = new DatagramSocket();
-
-            byte[] message = (adminUsername  + "-" +adminPassword).getBytes();
-            InetAddress hostAddress = InetAddress.getByName("localhost");
-
-            DatagramPacket request = new DatagramPacket(message,message.length,hostAddress,client_IP_Address);
-            datagramSocket.send(request);
-
-            byte[] buffer = new byte[1000];
-
-            DatagramPacket serverResponse = new DatagramPacket(buffer,buffer.length);
-            datagramSocket.receive(serverResponse);
-
-            System.out.println(new String(serverResponse.getData(),0,serverResponse.getLength()));
-
-        }catch (SocketException e){
-            System.out.println("Socket creation failed due to: " + e.getLocalizedMessage());
-        }catch (UnknownHostException e){
-            System.out.println(e.getLocalizedMessage());
-        }catch (IOException e){
-            System.out.println(e.getLocalizedMessage());
-        }
-        finally {
-            if(datagramSocket != null) datagramSocket.close();
-        }
-
-
-    }
 
 }

@@ -1,7 +1,9 @@
 package GameServers.AmericaServer;
 
+import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
+import SendUDP.SendReceiveUDPMessage;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -11,7 +13,7 @@ import java.util.Hashtable;
 public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
 
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
-
+    private static String response;
 
     protected AmericanGameServerImpl() throws RemoteException {
         super();
@@ -21,26 +23,25 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     public String createPlayerAccount(Player player) throws RemoteException {
 
         char playerKey = player.getUserName().charAt(0);
-        System.out.println(playerKey);
+
         ArrayList<Player> playerList;
 
-        if(playersTable.containsKey(playerKey)){
+        if (playersTable.containsKey(playerKey)) {
 
             playerList = playersTable.get(playerKey);
-            System.out.println("Player list is : " + playerList);
-            for(int i = 0; i < playerList.size(); i++) {
-                Player currPlayer =  playerList.get(i);
+
+            for (int i = 0; i < playerList.size(); i++) {
+                Player currPlayer = playerList.get(i);
                 System.out.println("Player list is : " + currPlayer.toString());
                 if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
                     return "UserName already exists";
                 }
             }
             playerList.add(player);
-        }
-        else{
+        } else {
             playerList = new ArrayList<>();
             playerList.add(player);
-            playersTable.put(playerKey,playerList);
+            playersTable.put(playerKey, playerList);
         }
 
 
@@ -52,24 +53,23 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         char playerKey = Username.charAt(0);
 
-        if(playersTable.containsKey(playerKey)){
+        if (playersTable.containsKey(playerKey)) {
 
             ArrayList<Player> playerList = playersTable.get(playerKey);
 
-            for(int i = 0; i < playerList.size(); i++) {
+            for (int i = 0; i < playerList.size(); i++) {
                 Player currPlayer = (Player) playerList.get(i);
-                if(currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)){
+                if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
                     currPlayer.setSignedIn(true);
                     playerList.remove(i);
                     playerList.add(currPlayer);
-                    playersTable.put(playerKey,playerList);
+                    playersTable.put(playerKey, playerList);
 
                     return currPlayer.getUserName() + " has logged in.";
                 }
             }
-        }
-        else{
+        } else {
             return "User not found";
         }
 
@@ -81,24 +81,23 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         char playerKey = Username.charAt(0);
 
-        if(playersTable.containsKey(playerKey)){
+        if (playersTable.containsKey(playerKey)) {
 
             ArrayList<Player> playerList = playersTable.get(playerKey);
 
-            for(int i = 0; i < playerList.size(); i++) {
+            for (int i = 0; i < playerList.size(); i++) {
                 Player currPlayer = (Player) playerList.get(i);
-                if(currPlayer.getUserName().equalsIgnoreCase(Username)){
+                if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
 
                     currPlayer.setSignedIn(false);
                     playerList.remove(i);
                     playerList.add(currPlayer);
-                    playersTable.put(playerKey,playerList);
+                    playersTable.put(playerKey, playerList);
 
                     return currPlayer.getUserName() + " has logged out.";
                 }
             }
-        }
-        else{
+        } else {
             return "User not found";
         }
 
@@ -106,8 +105,63 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     }
 
     @Override
-    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress) throws RemoteException {
-        return null;
+    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean first) throws RemoteException {
+
+        if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
+            return "Username or password incorrect.";
+        }
+
+        String response = Constants.SERVER_NAME_AMERICA + " has : ";
+        int onlineCount = 0;
+        int offlineCount = 0;
+
+        for (char key : playersTable.keySet()) {
+            for (Player p : playersTable.get(key)) {
+                if (p.isSignedIn()) onlineCount++;
+                else offlineCount++;
+            }
+        }
+
+        String response_Asia = "";
+        String response_Europe = "";
+
+        if (first) {
+            response_Asia = getPlayerStatusUDP(Constants.SERVER_IP_PORT_ASIA);
+            response_Europe = getPlayerStatusUDP(Constants.SERVER_IP_PORT_EUROPE);
+        }
+
+        response = response + onlineCount + " online, " + offlineCount + " offline. " + response_Asia + response_Europe;
+        return response;
+    }
+
+    private String getPlayerStatusUDP(int serverPort) {
+
+        String[] response = {"No response from " + serverPort};
+
+        SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
+
+        Thread UDPThread = new Thread(()->
+        {
+            try {
+                response[0] = sendReceiveUDPMessage.getUDPResponse("", serverPort);
+
+            } catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+
+        });
+
+        UDPThread.setName("Thread - UDP " + serverPort);
+        UDPThread.start();
+
+        try{
+            UDPThread.join();
+        }catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        return response[0];
+
     }
 
 }

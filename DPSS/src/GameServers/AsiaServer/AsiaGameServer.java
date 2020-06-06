@@ -49,10 +49,8 @@ public class AsiaGameServer {
 
     public static void main(String args[]) throws Exception {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
+        Thread server_asia = new Thread(()->
+        {
                 try {
                     AsianGameServerImpl serverImplementation = new AsianGameServerImpl();
                     //RMI setup
@@ -65,8 +63,11 @@ public class AsiaGameServer {
                     e.printStackTrace();
                     System.out.println("Exception at main" +e.getLocalizedMessage());
                 }
-            }
-        }).start();
+            });
+
+        server_asia.setName("thread_Asia_server");
+        server_asia.start();
+
 
     }
 }

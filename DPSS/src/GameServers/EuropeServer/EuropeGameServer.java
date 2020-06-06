@@ -50,10 +50,8 @@ public class EuropeGameServer {
 
     public static void main(String args[]) throws Exception {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
+        Thread server_europe = new Thread(()->
+        {
                 try {
                     EuropeGameServerImpl serverImplementation = new EuropeGameServerImpl();
                     //RMI setup
@@ -65,8 +63,10 @@ public class EuropeGameServer {
                 } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
                 }
-            }
-        }).start();
+            });
+
+        server_europe.setName("thread_Europe_server");
+        server_europe.start();
 
     }
 }

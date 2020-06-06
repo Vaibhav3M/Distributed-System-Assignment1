@@ -25,10 +25,13 @@ public class AmericaGameServer {
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
-                String requestMessage = new String(request.getData(),0,request.getLength());
+                String requestMessage = new String(request.getData(), 0, request.getLength());
 
-                responseString = serverImpl.getPlayerStatus("Admin","Admin",String.valueOf(request.getPort()),false);
-
+                if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],Constants.SERVER_NAME_AMERICA);
+                } else {
+                    responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
+                }
                 DatagramPacket reply = new DatagramPacket(responseString.getBytes(), responseString.length(), request.getAddress(), request.getPort());
 
                 dataSocket.send(reply);

@@ -23,6 +23,10 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
     @Override
     public String createPlayerAccount(Player player) throws RemoteException {
 
+        if(checkUserName(player.getUserName())){
+            return "Username already exists";
+        }
+
         char playerKey = player.getUserName().charAt(0);
 
         ArrayList<Player> playerList;
@@ -80,6 +84,8 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
     @Override
     public String playerSignOut(String Username, String IPAddress) throws RemoteException {
 
+        boolean isFromServerIP = (Integer.parseInt(IPAddress) == Constants.SERVER_IP_PORT_EUROPE);
+
         char playerKey = Username.charAt(0);
 
         if (playersTable.containsKey(playerKey)) {
@@ -87,13 +93,15 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
             ArrayList<Player> playerList = playersTable.get(playerKey);
 
             for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer = (Player) playerList.get(i);
+                Player currPlayer =  playerList.get(i);
                 if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
 
-                    currPlayer.setSignedIn(false);
-                    playerList.remove(i);
-                    playerList.add(currPlayer);
-                    playersTable.put(playerKey, playerList);
+                    if(isFromServerIP) {
+                        currPlayer.setSignedIn(false);
+                        playerList.remove(i);
+                        playerList.add(currPlayer);
+                        playersTable.put(playerKey, playerList);
+                    }
 
                     return currPlayer.getUserName() + " has logged out.";
                 }
@@ -106,7 +114,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
     }
 
     @Override
-    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean first) throws RemoteException {
+    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean checkOtherServers) throws RemoteException {
 
         if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
             return "Username or password incorrect.";
@@ -125,7 +133,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         String response_Asia = "";
         String response_America = "";
 
-        if (first) {
+        if (checkOtherServers) {
             response_Asia = getPlayerStatusUDP(Constants.SERVER_IP_PORT_ASIA);
             response_America = getPlayerStatusUDP(Constants.SERVER_IP_PORT_AMERICA);
              }
@@ -162,6 +170,15 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
         return response[0];
 
+    }
+
+    private boolean checkUserName(String userName) {
+        SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
+
+        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_AMERICA);
+        String check_asia = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_ASIA);
+
+        return !check_american.equalsIgnoreCase("User not found") || !check_asia.equalsIgnoreCase("User not found");
     }
 
 }

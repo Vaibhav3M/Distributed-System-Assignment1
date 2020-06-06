@@ -27,7 +27,11 @@ public class EuropeGameServer {
                 dataSocket.receive(request);
                 String requestMessage = new String(request.getData(),0,request.getLength());
 
-                responseString = serverImpl.getPlayerStatus("Admin","Admin",String.valueOf(request.getPort()),false);
+                if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_AMERICA));
+                } else {
+                    responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
+                }
 
                 DatagramPacket reply = new DatagramPacket(responseString.getBytes(), responseString.length(), request.getAddress(), request.getPort());
 

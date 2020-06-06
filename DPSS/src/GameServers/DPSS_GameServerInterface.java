@@ -12,7 +12,7 @@ public interface DPSS_GameServerInterface extends Remote {
     public String playerSignOut (String Username, String IPAddress) throws RemoteException;
 
     //Admin method
-    public String getPlayerStatus (String AdminUsername, String AdminPassword, String IPAddress, Boolean first) throws RemoteException;
+    public String getPlayerStatus (String AdminUsername, String AdminPassword, String IPAddress, Boolean checkOtherServers) throws RemoteException;
 
 
 }

@@ -14,7 +14,6 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     private static final long serialVersionUID = 7526472295622776147L;
 
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable<>();
-    private volatile String responseV;
 
     protected AsianGameServerImpl() throws RemoteException {
         super();
@@ -23,8 +22,11 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     @Override
     public String createPlayerAccount(Player player) throws RemoteException {
 
+        if(checkUserName(player.getUserName())){
+            return "Username already exists";
+        }
+
         char playerKey = player.getUserName().charAt(0);
-        System.out.println(playerKey);
         ArrayList<Player> playerList;
 
         if (playersTable.containsKey(playerKey)) {
@@ -59,7 +61,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
             ArrayList<Player> playerList = playersTable.get(playerKey);
 
             for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer = (Player) playerList.get(i);
+                Player currPlayer =  playerList.get(i);
                 if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
                     currPlayer.setSignedIn(true);
@@ -80,6 +82,8 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     @Override
     public String playerSignOut(String Username, String IPAddress) throws RemoteException {
 
+        boolean isFromServerIP = (Integer.parseInt(IPAddress) == Constants.SERVER_IP_PORT_ASIA);
+
         char playerKey = Username.charAt(0);
 
         if (playersTable.containsKey(playerKey)) {
@@ -87,13 +91,15 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
             ArrayList<Player> playerList = playersTable.get(playerKey);
 
             for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer = (Player) playerList.get(i);
+                Player currPlayer = playerList.get(i);
                 if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
 
-                    currPlayer.setSignedIn(false);
-                    playerList.remove(i);
-                    playerList.add(currPlayer);
-                    playersTable.put(playerKey, playerList);
+                    if(isFromServerIP) {
+                        currPlayer.setSignedIn(false);
+                        playerList.remove(i);
+                        playerList.add(currPlayer);
+                        playersTable.put(playerKey, playerList);
+                    }
 
                     return currPlayer.getUserName() + " has logged out.";
                 }
@@ -102,12 +108,12 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
             return "User not found";
         }
 
-        return "Error occurred. Please try again";
+        return "User not found";
     }
 
 
     @Override
-    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean first) throws RemoteException {
+    public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean checkOtherServers) throws RemoteException {
 
         if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
             return "Username or password incorrect.";
@@ -127,7 +133,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         String response_America = "";
         String response_Europe = "";
 
-        if (first) {
+        if (checkOtherServers) {
             response_America = getPlayerStatusUDP(Constants.SERVER_IP_PORT_AMERICA);
             response_Europe = getPlayerStatusUDP(Constants.SERVER_IP_PORT_EUROPE);
         }
@@ -164,6 +170,15 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         return response[0];
 
+    }
+
+    private boolean checkUserName(String userName) {
+        SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
+
+        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_AMERICA);
+        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_EUROPE);
+        System.out.println("A " + check_american + " E " + check_europe);
+        return !check_american.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
     }
 
 }

@@ -17,16 +17,14 @@ import java.util.logging.SimpleFormatter;
 public class PlayerClient {
 
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
-    private static int client_IP_Address = 132;
+    private static int client_IP_Address = 0;
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
     private static Logger logger = Logger.getLogger(PlayerClient.class.getName());
 
-
-    //Return basic menu.
-    private static int showMenu() throws Exception
-    {
-        initLogger(logger,"");
+    // Return basic menu.
+    private static int showMenu() throws Exception {
+       // initLogger(logger, "");
 
         System.out.println("\n**** Welcome to DPSS Game ****\n");
         logger.info("New session started ");
@@ -38,53 +36,50 @@ public class PlayerClient {
         System.out.println("3. SignOut");
         System.out.println("4. Exit");
 
-        boolean inputValid = false;
-        do {
-            try{
-                System.out.print("Please select an Option : ");
-                userinput = Integer.valueOf(reader.readLine());
-                inputValid = true;
-                logger.info("User selected " +userinput);
-            }catch (Exception e){
-                System.out.println("Oops..! Invalid input. Please select 1,2,3 or 4 to perform required action");
-            }
-        } while (!inputValid);
+		System.out.print("Please select an Option : ");
+
+		userinput = getValidIntegerInput();
 
         return userinput;
 
     }
 
 
+	public static void main(String args[]) throws Exception {
 
-    public static void main(String args[]) throws Exception{
         logger.setUseParentHandlers(false);
-        System.out.println("Please enter IP : (132, 93, 182)");
 
-        client_IP_Address = Integer.valueOf(reader.readLine());
 
-        switch (client_IP_Address){
+		while (!Validations.validateIP(client_IP_Address)) {
 
-            case 132:
-                client_server_name = Constants.SERVER_NAME_AMERICA;
-                break;
+			System.out.println("Please enter IP : (132, 93, 182)");
+			client_IP_Address = getValidIntegerInput();
 
-            case 93:
-                client_server_name = Constants.SERVER_NAME_EUROPE;
-                break;
+			switch (client_IP_Address) {
 
-            case 182:
-                client_server_name = Constants.SERVER_NAME_ASIA;
-                break;
-            default:
-                System.out.println("Invalid server IP");
+				case 132:
+					client_server_name = Constants.SERVER_NAME_AMERICA;
+					break;
 
-        }
-        System.out.println("LOADING......");
+				case 93:
+					client_server_name = Constants.SERVER_NAME_EUROPE;
+					break;
+
+				case 182:
+					client_server_name = Constants.SERVER_NAME_ASIA;
+					break;
+				default:
+					System.out.println("Invalid server IP");
+
+			}
+		}
+		System.out.println("Welcome to " + client_server_name);
+        System.out.println("LOADING...... Please be patient");
 
         Registry registry = LocateRegistry.getRegistry(client_IP_Address);
         dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
 
-        System.out.println(client_server_name + " at " + client_IP_Address +  " Activated");
+        System.out.println("Activated : " + client_server_name + " at " + client_IP_Address);
         boolean exit = false;
 
         while (!exit) {
@@ -109,7 +104,8 @@ public class PlayerClient {
                     System.out.print("Please enter password: ");
                     String password = reader.readLine();
 
-                    System.out.println(dpss_gameServerInterface.playerSignIn(userNameLogin, password, String.valueOf(client_IP_Address)));
+                    System.out.println(dpss_gameServerInterface.playerSignIn(userNameLogin, password,
+                            String.valueOf(client_IP_Address)));
                     Thread.sleep(100);
                     break;
 
@@ -118,7 +114,8 @@ public class PlayerClient {
                     System.out.print("Please enter user name: ");
                     String userNameLogout = reader.readLine();
 
-                    System.out.println(dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address)));
+                    System.out.println(
+                            dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address)));
                     Thread.sleep(100);
                     break;
 
@@ -129,48 +126,51 @@ public class PlayerClient {
                     exit = true;
                     break;
 
+				default:
+					System.out.println("Oops..! Invalid input. Please select 1,2,3 or 4 to perform required action");
+
             }
         }
     }
 
-    private static Player createPlayer() throws Exception{
+    private static Player createPlayer() throws Exception {
 
-        //inputting first name
+        // inputting first name
         System.out.print("Please enter first name: ");
         String firstName = reader.readLine();
 
-        //inputting last name
+        // inputting last name
         System.out.print("Please enter last name: ");
         String lastName = reader.readLine();
 
-        //inputting age
+        // inputting age
         boolean ageInt = false;
         int age = 0;
 
         do {
-            try{
+            try {
                 System.out.print("Please enter your age: ");
-                age = Integer.valueOf(reader.readLine());
+                age = getValidIntegerInput();
                 ageInt = true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Invalid age");
             }
         } while (!ageInt & Validations.validateAge(age));
 
-        //inputting username
+        // inputting username
         System.out.print("Please enter a unique username: ");
         String userName = reader.readLine();
-        while(!Validations.validateUserName(userName)){
+        while (!Validations.validateUserName(userName)) {
             System.out.println("Username must be between 5 to 15 characters");
             System.out.print("Please enter a unique username: ");
             userName = reader.readLine();
         }
 
-            //inputting password
+        // inputting password
         System.out.print("Please enter password: ");
         String password = reader.readLine();
 
-        while(!Validations.validatePassword(password)){
+        while (!Validations.validatePassword(password)) {
             System.out.println("Password must be minimum 6 characters");
             System.out.print("Please enter password: ");
             password = reader.readLine();
@@ -178,20 +178,36 @@ public class PlayerClient {
 
         System.out.println();
 
-        return new Player(firstName,lastName,age,userName,password,String.valueOf(client_IP_Address),false);
+        return new Player(firstName, lastName, age, userName, password, String.valueOf(client_IP_Address), false);
 
     }
+
+	private static int getValidIntegerInput() {
+
+		int value = 0;
+		boolean inputValid = false;
+		do {
+			try {
+				value = Integer.valueOf(reader.readLine());
+				inputValid = true;
+				logger.info("User selected " + value);
+			} catch (Exception e) {
+				System.out.println("This field requires a number value. Please try again");
+			}
+		} while (!inputValid);
+
+		return value;
+	}
 
     private static void initLogger(Logger log, String userID) {
         FileHandler fileHandler;
         try {
-            fileHandler = new FileHandler(System.getProperty("user.dir") + "\\LogFiles\\"  + ".log", true);
+            fileHandler = new FileHandler(System.getProperty("user.dir") + "\\LogFiles\\" + ".log", true);
             fileHandler.setFormatter(new SimpleFormatter());
-           // log.addHandler(fileHandler);
+            // log.addHandler(fileHandler);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 }

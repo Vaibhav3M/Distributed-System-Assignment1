@@ -18,4 +18,9 @@ public class Validations {
 
         return age > 0;
     }
+
+    public static boolean validateIP(int IP){
+
+        return (IP == 132 || IP == 93 || IP == 182);
+    }
 }

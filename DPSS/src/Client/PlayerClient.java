@@ -73,7 +73,7 @@ public class PlayerClient {
 
 			}
 		}
-		System.out.println("Welcome to " + client_server_name);
+		System.out.println("*************** Welcome to " + client_server_name+" ****************");
         System.out.println("LOADING...... Please be patient");
 
         Registry registry = LocateRegistry.getRegistry(client_IP_Address);
@@ -91,7 +91,7 @@ public class PlayerClient {
                 case 1:
                     Player newPlayer = createPlayer();
                     String result = dpss_gameServerInterface.createPlayerAccount(newPlayer);
-                    logger.info(result);
+                    //logger.info(result);
                     System.out.println(result);
                     Thread.sleep(100);
                     break;
@@ -104,6 +104,7 @@ public class PlayerClient {
                     System.out.print("Please enter password: ");
                     String password = reader.readLine();
 
+                    System.out.println();
                     System.out.println(dpss_gameServerInterface.playerSignIn(userNameLogin, password,
                             String.valueOf(client_IP_Address)));
                     Thread.sleep(100);
@@ -114,6 +115,7 @@ public class PlayerClient {
                     System.out.print("Please enter user name: ");
                     String userNameLogout = reader.readLine();
 
+                    System.out.println();
                     System.out.println(
                             dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address)));
                     Thread.sleep(100);
@@ -188,7 +190,11 @@ public class PlayerClient {
 		boolean inputValid = false;
 		do {
 			try {
-				value = Integer.valueOf(reader.readLine());
+			    String input = reader.readLine();
+			    if(input.contains(".")){
+			        input = input.split("\\.")[0];
+                }
+				value = Integer.valueOf(input);
 				inputValid = true;
 				logger.info("User selected " + value);
 			} catch (Exception e) {

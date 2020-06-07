@@ -155,7 +155,7 @@ public class AdminClient {
 
                 case 3:
                     LOGGER.info("Admin session over at " + client_IP_Address);
-                    fileHandler.close();
+                    if (fileHandler != null) fileHandler.close();
                     System.out.println("Message: Thank you for visiting our DPSS app");
                     exit = true;
                     break;

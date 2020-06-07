@@ -31,7 +31,7 @@ public class PlayerClient {
 
 
         System.out.println("\n**** Welcome to DPSS Game ****\n");
-        LOGGER.info("New session started ");
+
         int userinput = 1;
 
         System.out.println("Please select an option (1-4)");
@@ -51,40 +51,38 @@ public class PlayerClient {
 
 	public static void main(String args[]) throws Exception {
 
-        setupLogging("general");
-		while (!Validations.validateIP(client_IP_Address)) {
+//        setupLogging("general");
+//		while (!Validations.validateIP(client_IP_Address)) {
+//
+//			System.out.println("Please enter IP : (132, 93, 182)");
+//			client_IP_Address = getValidIntegerInput();
+//
+//			switch (client_IP_Address) {
+//
+//				case 132:
+//					client_server_name = Constants.SERVER_NAME_AMERICA;
+//                    server_port_number = Constants.SERVER_PORT_AMERICA;
+//					break;
+//
+//				case 93:
+//					client_server_name = Constants.SERVER_NAME_EUROPE;
+//					server_port_number = Constants.SERVER_PORT_EUROPE;
+//					break;
+//
+//				case 182:
+//					client_server_name = Constants.SERVER_NAME_ASIA;
+//					server_port_number = Constants.SERVER_PORT_ASIA;
+//					break;
+//				default:
+//					System.out.println("Invalid server IP");
+//
+//			}
+//		}
+//		System.out.println("*************** Welcome to " + client_server_name+" ****************");
+//        System.out.println("LOADING...... Please be patient");
 
-			System.out.println("Please enter IP : (132, 93, 182)");
-			client_IP_Address = getValidIntegerInput();
 
-			switch (client_IP_Address) {
-
-				case 132:
-					client_server_name = Constants.SERVER_NAME_AMERICA;
-                    server_port_number = Constants.SERVER_PORT_AMERICA;
-					break;
-
-				case 93:
-					client_server_name = Constants.SERVER_NAME_EUROPE;
-					server_port_number = Constants.SERVER_PORT_EUROPE;
-					break;
-
-				case 182:
-					client_server_name = Constants.SERVER_NAME_ASIA;
-					server_port_number = Constants.SERVER_PORT_ASIA;
-					break;
-				default:
-					System.out.println("Invalid server IP");
-
-			}
-		}
-		System.out.println("*************** Welcome to " + client_server_name+" ****************");
-        System.out.println("LOADING...... Please be patient");
-
-        Registry registry = LocateRegistry.getRegistry(server_port_number);
-        dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
-
-        LOGGER.info("Activated : " + client_server_name + " at " + server_port_number);
+        //LOGGER.info("Activated : " + client_server_name + " at " + server_port_number);
         boolean exit = false;
 
         while (!exit) {
@@ -94,23 +92,32 @@ public class PlayerClient {
             switch (userinput) {
 
                 case 1:
+                    client_IP_Address = 0;
                     Player newPlayer = createPlayer();
                     String result1 = dpss_gameServerInterface.createPlayerAccount(newPlayer);
                     setupLogging(newPlayer.getUserName());
                     LOGGER.info(newPlayer.getUserName() + " request to create new account on " + client_server_name);
                     LOGGER.info(result1);
-                    fileHandler.close();
-                    System.out.println(result1);
+                    if (fileHandler != null) fileHandler.close();
+                    System.out.println("Message: " +result1);
                     Thread.sleep(100);
                     break;
 
                 case 2:
-
+                    client_IP_Address = 0;
                     System.out.print("Please enter user name: ");
                     String userNameLogin = reader.readLine().trim();
 
                     System.out.print("Please enter password: ");
                     String password = reader.readLine().trim();
+
+                    while (!Validations.validateIP(client_IP_Address)) {
+
+                        System.out.print("Please enter IP starting (132, 93, 182): ");
+                        client_IP_Address = getValidIntegerInput();
+                    }
+                    getServerFromIP(client_IP_Address);
+
 
                     System.out.println();
 
@@ -119,14 +126,14 @@ public class PlayerClient {
                     String result2 = dpss_gameServerInterface.playerSignIn(userNameLogin, password,
                             String.valueOf(client_IP_Address));
                     LOGGER.info(result2);
-                    System.out.println(result2);
-                    fileHandler.close();
+                    System.out.println("Message: " +result2);
+                    if (fileHandler != null) fileHandler.close();
 
                     Thread.sleep(100);
                     break;
 
                 case 3:
-
+                    client_IP_Address = 0;
                     System.out.print("Please enter user name: ");
                     String userNameLogout = reader.readLine().trim();
 
@@ -134,16 +141,23 @@ public class PlayerClient {
                     setupLogging(userNameLogout);
                     LOGGER.info(userNameLogout + " attempted to sign out of " + client_server_name);
 
+                    while (!Validations.validateIP(client_IP_Address)) {
+
+                        System.out.print("Please enter IP starting (132, 93, 182): ");
+                        client_IP_Address = getValidIntegerInput();
+                    }
+                    getServerFromIP(client_IP_Address);
+
                     String result3 = dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address));
                     LOGGER.info(result3);
-                    fileHandler.close();
-                    System.out.println(result3);
+                    if (fileHandler != null) fileHandler.close();
+                    System.out.println("Message: " + result3);
                     Thread.sleep(100);
                     break;
 
                 case 4:
                     LOGGER.info("Exited the session.");
-                    fileHandler.close();
+                   if (fileHandler != null) fileHandler.close();
                     System.out.println("Thank you for visiting our DPSS app");
                     Thread.sleep(100);
                     exit = true;
@@ -184,7 +198,7 @@ public class PlayerClient {
         System.out.print("Please enter a unique username: ");
         String userName = reader.readLine();
         while (!Validations.validateUserName(userName)) {
-            System.out.println("Username must be between 5 to 15 characters");
+            System.out.println("Error: Username must be between 5 to 15 characters");
             System.out.print("Please enter a unique username: ");
             userName = reader.readLine().trim();
         }
@@ -194,15 +208,59 @@ public class PlayerClient {
         String password = reader.readLine().trim();
 
         while (!Validations.validatePassword(password)) {
-            System.out.println("Password must be minimum 6 characters");
+            System.out.println("Error: Password must be minimum 6 characters");
             System.out.print("Please enter password: ");
             password = reader.readLine().trim();
         }
+
+
+        while (!Validations.validateIP(client_IP_Address)) {
+
+            System.out.print("Please enter IP starting (132, 93, 182): ");
+            client_IP_Address = getValidIntegerInput();
+        }
+        getServerFromIP(client_IP_Address);
+
 
         System.out.println();
 
         return new Player(firstName, lastName, age, userName, password, String.valueOf(client_IP_Address), false);
 
+    }
+
+    private static void getServerFromIP(int client_IP_Address){
+
+
+            switch (client_IP_Address) {
+
+                case 132:
+                    client_server_name = Constants.SERVER_NAME_AMERICA;
+                    server_port_number = Constants.SERVER_PORT_AMERICA;
+                    break;
+
+                case 93:
+                    client_server_name = Constants.SERVER_NAME_EUROPE;
+                    server_port_number = Constants.SERVER_PORT_EUROPE;
+                    break;
+
+                case 182:
+                    client_server_name = Constants.SERVER_NAME_ASIA;
+                    server_port_number = Constants.SERVER_PORT_ASIA;
+                    break;
+                default:
+                    System.out.println("Error: Invalid server IP");
+
+
+        }
+
+        try {
+            System.out.println("***** Verifying info from server. Please wait. *****");
+            Registry registry = LocateRegistry.getRegistry(server_port_number);
+            dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
+
+        }catch (Exception e){
+            System.out.println( e.getLocalizedMessage());
+        }
     }
 
 	private static int getValidIntegerInput() {
@@ -219,7 +277,7 @@ public class PlayerClient {
 				inputValid = true;
 
 			} catch (Exception e) {
-				System.out.println("This field requires a number value. Please try again");
+				System.out.println("Error: This field requires a number value. Please try again");
 			}
 		} while (!inputValid);
 

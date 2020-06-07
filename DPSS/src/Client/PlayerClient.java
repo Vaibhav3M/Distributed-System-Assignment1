@@ -4,15 +4,15 @@ import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
 import Constants.Validations;
+import Utilities.CustomLogger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class PlayerClient {
 
@@ -20,14 +20,14 @@ public class PlayerClient {
     private static int client_IP_Address = 0;
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
-    private static Logger logger = Logger.getLogger(PlayerClient.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     // Return basic menu.
     private static int showMenu() throws Exception {
-       // initLogger(logger, "");
+
 
         System.out.println("\n**** Welcome to DPSS Game ****\n");
-        logger.info("New session started ");
+        LOGGER.info("New session started ");
         int userinput = 1;
 
         System.out.println("Please select an option (1-4)");
@@ -47,9 +47,7 @@ public class PlayerClient {
 
 	public static void main(String args[]) throws Exception {
 
-        logger.setUseParentHandlers(false);
-
-
+        setupLogging("general");
 		while (!Validations.validateIP(client_IP_Address)) {
 
 			System.out.println("Please enter IP : (132, 93, 182)");
@@ -79,7 +77,7 @@ public class PlayerClient {
         Registry registry = LocateRegistry.getRegistry(client_IP_Address);
         dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
 
-        System.out.println("Activated : " + client_server_name + " at " + client_IP_Address);
+        LOGGER.info("Activated : " + client_server_name + " at " + client_IP_Address);
         boolean exit = false;
 
         while (!exit) {
@@ -90,39 +88,50 @@ public class PlayerClient {
 
                 case 1:
                     Player newPlayer = createPlayer();
-                    String result = dpss_gameServerInterface.createPlayerAccount(newPlayer);
-                    //logger.info(result);
-                    System.out.println(result);
+                    String result1 = dpss_gameServerInterface.createPlayerAccount(newPlayer);
+                    setupLogging(newPlayer.getUserName());
+                    LOGGER.info(newPlayer.getUserName() + " request to create new account on " + client_server_name);
+                    LOGGER.info(result1);
+                    System.out.println(result1);
                     Thread.sleep(100);
                     break;
 
                 case 2:
 
                     System.out.print("Please enter user name: ");
-                    String userNameLogin = reader.readLine();
+                    String userNameLogin = reader.readLine().trim();
 
                     System.out.print("Please enter password: ");
-                    String password = reader.readLine();
+                    String password = reader.readLine().trim();
 
                     System.out.println();
-                    System.out.println(dpss_gameServerInterface.playerSignIn(userNameLogin, password,
-                            String.valueOf(client_IP_Address)));
+
+                    setupLogging(userNameLogin);
+                    LOGGER.info(userNameLogin + " attempted to sign in on " + client_server_name);
+                    String result2 = dpss_gameServerInterface.playerSignIn(userNameLogin, password,
+                            String.valueOf(client_IP_Address));
+                    LOGGER.info(result2);
+                    System.out.println(result2);
                     Thread.sleep(100);
                     break;
 
                 case 3:
 
                     System.out.print("Please enter user name: ");
-                    String userNameLogout = reader.readLine();
+                    String userNameLogout = reader.readLine().trim();
 
                     System.out.println();
-                    System.out.println(
-                            dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address)));
+                    setupLogging(userNameLogout);
+                    LOGGER.info(userNameLogout + " attempted to sign out of " + client_server_name);
+
+                    String result3 = dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address));
+                    LOGGER.info(result3);
+                    System.out.println(result3);
                     Thread.sleep(100);
                     break;
 
                 case 4:
-
+                    LOGGER.info("Exited the session.");
                     System.out.println("Thank you for visiting our DPSS app");
                     Thread.sleep(100);
                     exit = true;
@@ -139,11 +148,11 @@ public class PlayerClient {
 
         // inputting first name
         System.out.print("Please enter first name: ");
-        String firstName = reader.readLine();
+        String firstName = reader.readLine().trim();
 
         // inputting last name
         System.out.print("Please enter last name: ");
-        String lastName = reader.readLine();
+        String lastName = reader.readLine().trim();
 
         // inputting age
         boolean ageInt = false;
@@ -165,17 +174,17 @@ public class PlayerClient {
         while (!Validations.validateUserName(userName)) {
             System.out.println("Username must be between 5 to 15 characters");
             System.out.print("Please enter a unique username: ");
-            userName = reader.readLine();
+            userName = reader.readLine().trim();
         }
 
         // inputting password
         System.out.print("Please enter password: ");
-        String password = reader.readLine();
+        String password = reader.readLine().trim();
 
         while (!Validations.validatePassword(password)) {
             System.out.println("Password must be minimum 6 characters");
             System.out.print("Please enter password: ");
-            password = reader.readLine();
+            password = reader.readLine().trim();
         }
 
         System.out.println();
@@ -190,13 +199,13 @@ public class PlayerClient {
 		boolean inputValid = false;
 		do {
 			try {
-			    String input = reader.readLine();
+			    String input = reader.readLine().trim();
 			    if(input.contains(".")){
 			        input = input.split("\\.")[0];
                 }
 				value = Integer.valueOf(input);
 				inputValid = true;
-				logger.info("User selected " + value);
+
 			} catch (Exception e) {
 				System.out.println("This field requires a number value. Please try again");
 			}
@@ -205,15 +214,15 @@ public class PlayerClient {
 		return value;
 	}
 
-    private static void initLogger(Logger log, String userID) {
-        FileHandler fileHandler;
-        try {
-            fileHandler = new FileHandler(System.getProperty("user.dir") + "\\LogFiles\\" + ".log", true);
-            fileHandler.setFormatter(new SimpleFormatter());
-            // log.addHandler(fileHandler);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    private static void setupLogging(String name) throws IOException {
+        File files = new File(Constants.PLAYER_LOG_DIRECTORY);
+        if (!files.exists())
+            files.mkdirs();
+        files = new File(Constants.PLAYER_LOG_DIRECTORY+"Player_"+ name+ ".log");
+        if(!files.exists())
+            files.createNewFile();
+        CustomLogger.setup(files.getAbsolutePath());
     }
 
 }

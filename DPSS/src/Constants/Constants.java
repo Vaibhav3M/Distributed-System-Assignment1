@@ -13,5 +13,6 @@ public class Constants {
 
     public static final String SERVER_LOG_DIRECTORY = "./src/Logs/Server/";
     public static final String PLAYER_LOG_DIRECTORY = "./src/Logs/Player/";
+    public static final String ADMIN_LOG_DIRECTORY = "./src/Logs/Admin/";
 
 }

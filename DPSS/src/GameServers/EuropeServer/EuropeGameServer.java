@@ -26,9 +26,13 @@ public class EuropeGameServer {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
                 String requestMessage = new String(request.getData(),0,request.getLength());
+                System.out.println(requestMessage);
+
+                String request_IP = requestMessage.split(":")[0];
+                requestMessage = requestMessage.split(":")[1];
 
                 if (requestMessage.split("=")[0].equalsIgnoreCase("username")) {
-                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],String.valueOf(Constants.SERVER_IP_PORT_EUROPE));
+                    responseString = serverImpl.playerSignOut(requestMessage.split("=")[1],request_IP);
                 } else {
                     responseString = serverImpl.getPlayerStatus("Admin", "Admin", String.valueOf(request.getPort()), false);
                 }

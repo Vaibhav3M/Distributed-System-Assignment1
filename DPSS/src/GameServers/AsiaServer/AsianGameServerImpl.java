@@ -9,42 +9,56 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
     private static final long serialVersionUID = 7526472295622776147L;
 
+    private static Lock lock = new ReentrantLock(true);
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable<>();
 
     protected AsianGameServerImpl() throws RemoteException {
         super();
+
+        try {
+            addDummyData();
+        } catch (Exception e) {
+            System.out.println("Unable to add dummy data on " + Constants.SERVER_NAME_ASIA);
+        }
     }
 
     @Override
     public String createPlayerAccount(Player player) throws RemoteException {
 
-        if(checkUserName(player.getUserName())){
+        if (checkUserName(player.getUserName())) {
             return "Username already exists";
         }
 
         char playerKey = player.getUserName().charAt(0);
         ArrayList<Player> playerList;
 
-        if (playersTable.containsKey(playerKey)) {
+        try {
+            lock.lock();
+            if (playersTable.containsKey(playerKey)) {
 
-            playerList = playersTable.get(playerKey);
-            System.out.println("Player list is : " + playerList);
-            for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer = playerList.get(i);
-                System.out.println("Player list is : " + currPlayer.toString());
-                if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
-                    return "UserName already exists";
+                playerList = playersTable.get(playerKey);
+                System.out.println("Player list is : " + playerList);
+                for (int i = 0; i < playerList.size(); i++) {
+                    Player currPlayer = playerList.get(i);
+                    System.out.println("Player list is : " + currPlayer.toString());
+                    if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
+                        return "UserName already exists";
+                    }
                 }
+                playerList.add(player);
+            } else {
+                playerList = new ArrayList<>();
+                playerList.add(player);
+                playersTable.put(playerKey, playerList);
             }
-            playerList.add(player);
-        } else {
-            playerList = new ArrayList<>();
-            playerList.add(player);
-            playersTable.put(playerKey, playerList);
+        } finally {
+            lock.unlock();
         }
 
 
@@ -56,24 +70,29 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         char playerKey = Username.charAt(0);
 
-        if (playersTable.containsKey(playerKey)) {
+        try {
+            lock.lock();
+            if (playersTable.containsKey(playerKey)) {
 
-            ArrayList<Player> playerList = playersTable.get(playerKey);
+                ArrayList<Player> playerList = playersTable.get(playerKey);
 
-            for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer =  playerList.get(i);
-                if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
+                for (int i = 0; i < playerList.size(); i++) {
+                    Player currPlayer = playerList.get(i);
+                    if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
-                    currPlayer.setSignedIn(true);
-                    playerList.remove(i);
-                    playerList.add(currPlayer);
-                    playersTable.put(playerKey, playerList);
+                        currPlayer.setSignedIn(true);
+                        playerList.remove(i);
+                        playerList.add(currPlayer);
+                        playersTable.put(playerKey, playerList);
 
-                    return currPlayer.getUserName() + " has logged in.";
+                        return currPlayer.getUserName() + " has logged in.";
+                    }
                 }
+            } else {
+                return "User not found";
             }
-        } else {
-            return "User not found";
+        } finally {
+            lock.unlock();
         }
 
         return "Error occurred. Please try again";
@@ -86,26 +105,31 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         char playerKey = Username.charAt(0);
 
-        if (playersTable.containsKey(playerKey)) {
+        try {
+            lock.lock();
+            if (playersTable.containsKey(playerKey)) {
 
-            ArrayList<Player> playerList = playersTable.get(playerKey);
+                ArrayList<Player> playerList = playersTable.get(playerKey);
 
-            for (int i = 0; i < playerList.size(); i++) {
-                Player currPlayer = playerList.get(i);
-                if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
+                for (int i = 0; i < playerList.size(); i++) {
+                    Player currPlayer = playerList.get(i);
+                    if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
 
-                    if(isFromServerIP) {
-                        currPlayer.setSignedIn(false);
-                        playerList.remove(i);
-                        playerList.add(currPlayer);
-                        playersTable.put(playerKey, playerList);
+                        if (isFromServerIP) {
+                            currPlayer.setSignedIn(false);
+                            playerList.remove(i);
+                            playerList.add(currPlayer);
+                            playersTable.put(playerKey, playerList);
+                        }
+
+                        return currPlayer.getUserName() + " has logged out.";
                     }
-
-                    return currPlayer.getUserName() + " has logged out.";
                 }
+            } else {
+                return "User not found";
             }
-        } else {
-            return "User not found";
+        } finally {
+            lock.unlock();
         }
 
         return "User not found";
@@ -115,19 +139,24 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     @Override
     public String getPlayerStatus(String AdminUsername, String AdminPassword, String IPAddress, Boolean checkOtherServers) throws RemoteException {
 
-        if(!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")){
+        if (!AdminUsername.equalsIgnoreCase("Admin") || !AdminPassword.equalsIgnoreCase("Admin")) {
             return "Username or password incorrect.";
         }
 
-        String response = Constants.SERVER_NAME_ASIA + " has : ";
+        String response =  "AS: ";
         int onlineCount = 0;
         int offlineCount = 0;
 
-        for (char key : playersTable.keySet()) {
-            for (Player p : playersTable.get(key)) {
-                if (p.isSignedIn()) onlineCount++;
-                else offlineCount++;
+        try {
+            lock.lock();
+            for (char key : playersTable.keySet()) {
+                for (Player p : playersTable.get(key)) {
+                    if (p.isSignedIn()) onlineCount++;
+                    else offlineCount++;
+                }
             }
+        } finally {
+            lock.unlock();
         }
 
         String response_America = "";
@@ -148,13 +177,13 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
-        Thread UDPThread = new Thread(()->
+        Thread UDPThread = new Thread(() ->
         {
             try {
-                response[0] = sendReceiveUDPMessage.getUDPResponse("", serverPort);
+                response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort,Constants.SERVER_IP_PORT_ASIA);
 
             } catch (Exception e) {
-                System.out.println("Exception at getplayerstatus" +e.getLocalizedMessage());
+                System.out.println("Exception at getplayerstatus" + e.getLocalizedMessage());
             }
 
         });
@@ -162,9 +191,9 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         UDPThread.setName("Thread - UDP " + serverPort);
         UDPThread.start();
 
-        try{
+        try {
             UDPThread.join();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Exception at getplayerstatus" + e.getLocalizedMessage());
         }
 
@@ -175,10 +204,15 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
-        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_AMERICA);
-        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName="+userName,Constants.SERVER_IP_PORT_EUROPE);
+        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_IP_PORT_AMERICA,Constants.SERVER_IP_PORT_ASIA);
+        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_IP_PORT_EUROPE,Constants.SERVER_IP_PORT_ASIA);
 
         return !check_american.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
+    }
+
+    private void addDummyData() throws Exception {
+        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), false));
+        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
     }
 
 }

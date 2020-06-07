@@ -6,7 +6,7 @@ import java.net.*;
 public class SendReceiveUDPMessage {
 
 
-    public String getUDPResponse(String actionMessage, int client_IP_Address) {
+    public String getUDPResponse(String actionMessage, int client_IP_Address, int sender_IP_Address) {
 
         DatagramSocket datagramSocket = null;
         String response = "No response from " + client_IP_Address;
@@ -14,7 +14,7 @@ public class SendReceiveUDPMessage {
         try{
             datagramSocket = new DatagramSocket();
 
-            byte[] message = (actionMessage).getBytes();
+            byte[] message = (sender_IP_Address+":"+actionMessage).getBytes();
             InetAddress hostAddress = InetAddress.getByName("localhost");
 
             DatagramPacket request = new DatagramPacket(message,message.length,hostAddress,client_IP_Address);

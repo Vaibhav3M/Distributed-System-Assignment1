@@ -37,7 +37,7 @@ public class Player implements Serializable{
         this.userName = userName;
         this.password = password;
         this.IPAddress = IPAddress;
-        this.signedIn = false;
+        this.signedIn = signedIn;
     }
 
 

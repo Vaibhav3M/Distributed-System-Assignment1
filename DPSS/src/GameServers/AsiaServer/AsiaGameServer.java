@@ -26,7 +26,7 @@ public class AsiaGameServer {
 
             dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_ASIA);
             byte[] buffer = new byte[1000];
-            LOGGER.info(Constants.SERVER_NAME_ASIA + " started..!!!");
+            LOGGER.info( "Server started..!!!");
             System.out.println(Constants.SERVER_NAME_ASIA + " started..!!!");
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
@@ -69,6 +69,7 @@ public class AsiaGameServer {
                     //RMI setup
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_ASIA);
                     registry.bind(Constants.SERVER_NAME_ASIA, serverImplementation);
+                    //setup logger
                     setupLogging();
                     //UDP setup
                     recieve(serverImplementation);

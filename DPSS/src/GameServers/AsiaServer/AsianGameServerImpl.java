@@ -36,7 +36,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         if (checkUserName(player.getUserName())) {
 
-            LOGGER.info("Username already existed");
+            LOGGER.info("Username=" + player.getUserName() +" already existed");
             return "Username already exists";
         }
 
@@ -53,6 +53,8 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                     Player currPlayer = playerList.get(i);
                     System.out.println("Player list is : " + currPlayer.toString());
                     if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
+                        LOGGER.info("Username=" + player.getUserName() +" already existed");
+
                         return "UserName already exists";
                     }
                 }
@@ -106,7 +108,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
             lock.unlock();
         }
 
-        return "Error occurred. Please try again";
+        return Username + " not found";
     }
 
     @Override
@@ -141,13 +143,13 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return "User not found";
+                return Username + " not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return "User not found";
+        return Username + " not found";
     }
 
 

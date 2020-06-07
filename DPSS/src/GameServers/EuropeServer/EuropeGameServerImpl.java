@@ -4,34 +4,40 @@ import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
 import SendUDP.SendReceiveUDPMessage;
+import Utilities.CustomLogger;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
 
     private static Lock lock = new ReentrantLock(true);
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
 
     protected EuropeGameServerImpl() throws RemoteException {
         super();
+        try { setupLogging(); } catch (Exception e) {}
 
-        try {
-            addDummyData();
-        } catch (Exception e) {
-            System.out.println("Unable to add dummy data on " + Constants.SERVER_NAME_EUROPE);
-        }
     }
 
 
     @Override
     public String createPlayerAccount(Player player) throws RemoteException {
 
+        LOGGER.info("Received RMI request - Create Player - " + player.toString());
+
         if (checkUserName(player.getUserName())) {
+            LOGGER.info("Username=" + player.getUserName() + " already existed");
+
             return "Username already exists";
         }
 
@@ -50,6 +56,8 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                     Player currPlayer = playerList.get(i);
                     System.out.println("Player list is : " + currPlayer.toString());
                     if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
+                        LOGGER.info("Username=" + player.getUserName() + " already existed");
+
                         return "UserName already exists";
                     }
                 }
@@ -64,11 +72,15 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
             lock.unlock();
         }
 
+        LOGGER.info("Player Created successfully - " + player.toString());
+
         return "Successful";
     }
 
     @Override
     public String playerSignIn(String Username, String Password, String IPAddress) throws RemoteException {
+
+        LOGGER.info("Received RMI request - SignIn Player - " + "Username=" + Username);
 
         char playerKey = Username.charAt(0);
 
@@ -87,17 +99,21 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                         playerList.add(currPlayer);
                         playersTable.put(playerKey, playerList);
 
+                        LOGGER.info("Player SignedIn - " + "Username=" + Username);
+
                         return currPlayer.getUserName() + " has logged in.";
                     }
                 }
             } else {
-                return "User not found";
+                LOGGER.info("Player not found - " + "Username=" + Username);
+
+                return Username + " not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return "Error occurred. Please try again";
+        return Username + " not found";
     }
 
     @Override
@@ -117,23 +133,27 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                     if (currPlayer.getUserName().equalsIgnoreCase(Username)) {
 
                         if (isFromServerIP) {
+                            LOGGER.info("Received RMI request - SignOut Player - " + Username);
+
                             currPlayer.setSignedIn(false);
                             playerList.remove(i);
                             playerList.add(currPlayer);
                             playersTable.put(playerKey, playerList);
                         }
 
+                        LOGGER.info("Player SignedOut - " + "Username=" + Username);
                         return currPlayer.getUserName() + " has logged out.";
                     }
                 }
             } else {
-                return "User not found";
+                LOGGER.info("Player not found - " + "Username=" + Username);
+                return Username + " not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return "Error occurred. Please try again";
+        return Username + " not found";
     }
 
     @Override
@@ -173,6 +193,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
     private String getPlayerStatusUDP(int serverPort) {
 
+        LOGGER.info("Created UDP request - Get player status from port " + serverPort);
         String[] response = {"No response from " + serverPort};
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
@@ -183,7 +204,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                 response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort, Constants.SERVER_IP_PORT_EUROPE);
 
             } catch (Exception e) {
-                System.out.println(e.getLocalizedMessage());
+                System.out.println("Exception at getPlayerStatus: " + e.getLocalizedMessage());
             }
 
         });
@@ -197,6 +218,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
             System.out.println(e.getLocalizedMessage());
         }
 
+        LOGGER.info("Received UDP response from " + serverPort + " - " + response[0]);
         return response[0];
 
     }
@@ -213,5 +235,15 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
     private void addDummyData() throws Exception {
         createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), false));
         createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
+    }
+
+    private static void setupLogging() throws IOException {
+        File files = new File(Constants.SERVER_LOG_DIRECTORY);
+        if (!files.exists())
+            files.mkdirs();
+        files = new File(Constants.SERVER_LOG_DIRECTORY+"EUROPE_Server.log");
+        if(!files.exists())
+            files.createNewFile();
+        CustomLogger.setup(files.getAbsolutePath());
     }
 }

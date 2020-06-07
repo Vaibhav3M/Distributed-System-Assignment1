@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class PlayerClient {
@@ -21,6 +22,8 @@ public class PlayerClient {
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    static FileHandler fileHandler = null;
+
 
     // Return basic menu.
     private static int showMenu() throws Exception {
@@ -92,6 +95,7 @@ public class PlayerClient {
                     setupLogging(newPlayer.getUserName());
                     LOGGER.info(newPlayer.getUserName() + " request to create new account on " + client_server_name);
                     LOGGER.info(result1);
+                    fileHandler.close();
                     System.out.println(result1);
                     Thread.sleep(100);
                     break;
@@ -112,6 +116,8 @@ public class PlayerClient {
                             String.valueOf(client_IP_Address));
                     LOGGER.info(result2);
                     System.out.println(result2);
+                    fileHandler.close();
+
                     Thread.sleep(100);
                     break;
 
@@ -126,12 +132,14 @@ public class PlayerClient {
 
                     String result3 = dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address));
                     LOGGER.info(result3);
+                    fileHandler.close();
                     System.out.println(result3);
                     Thread.sleep(100);
                     break;
 
                 case 4:
                     LOGGER.info("Exited the session.");
+                    fileHandler.close();
                     System.out.println("Thank you for visiting our DPSS app");
                     Thread.sleep(100);
                     exit = true;
@@ -222,7 +230,7 @@ public class PlayerClient {
         files = new File(Constants.PLAYER_LOG_DIRECTORY+"Player_"+ name+ ".log");
         if(!files.exists())
             files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
+        fileHandler = CustomLogger.setup(files.getAbsolutePath());
     }
 
 }

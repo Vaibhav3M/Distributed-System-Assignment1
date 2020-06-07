@@ -4,10 +4,7 @@ import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
 import SendUDP.SendReceiveUDPMessage;
-import Utilities.CustomLogger;
 
-import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -21,12 +18,12 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
     private static Lock lock = new ReentrantLock(true);
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable<>();
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static Logger LOGGER;
 
 
-    protected AsianGameServerImpl() throws RemoteException {
+    protected AsianGameServerImpl(Logger logger) throws RemoteException {
         super();
-        try{ setupLogging(); } catch(Exception e){}
+        LOGGER = logger;
     }
 
     @Override
@@ -233,14 +230,5 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
     }
 
-    private static void setupLogging() throws IOException {
-        File files = new File(Constants.SERVER_LOG_DIRECTORY);
-        if (!files.exists())
-            files.mkdirs();
-        files = new File(Constants.SERVER_LOG_DIRECTORY+"ASIA_Server.log");
-        if(!files.exists())
-            files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
-    }
 
 }

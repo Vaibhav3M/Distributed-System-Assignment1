@@ -11,11 +11,13 @@ import java.net.SocketException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AsiaGameServer {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    static FileHandler fileHandler = null;
 
     public static void recieve(AsianGameServerImpl serverImpl) {
 
@@ -56,6 +58,7 @@ public class AsiaGameServer {
             LOGGER.info("Exception at IO" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
+            fileHandler.close();
         }
 
     }
@@ -65,7 +68,7 @@ public class AsiaGameServer {
         Thread server_asia = new Thread(()->
         {
                 try {
-                    AsianGameServerImpl serverImplementation = new AsianGameServerImpl();
+                    AsianGameServerImpl serverImplementation = new AsianGameServerImpl(LOGGER);
                     //RMI setup
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_ASIA);
                     registry.bind(Constants.SERVER_NAME_ASIA, serverImplementation);
@@ -93,7 +96,7 @@ public class AsiaGameServer {
         files = new File(Constants.SERVER_LOG_DIRECTORY+"ASIA_Server.log");
         if(!files.exists())
             files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
+        fileHandler = CustomLogger.setup(files.getAbsolutePath());
     }
 
 }

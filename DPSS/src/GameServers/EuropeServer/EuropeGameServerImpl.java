@@ -20,12 +20,12 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
     private static Lock lock = new ReentrantLock(true);
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static Logger LOGGER;
 
 
-    protected EuropeGameServerImpl() throws RemoteException {
+    protected EuropeGameServerImpl(Logger logger) throws RemoteException {
         super();
-        try { setupLogging(); } catch (Exception e) {}
+        LOGGER = logger;
 
     }
 
@@ -237,13 +237,4 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
     }
 
-    private static void setupLogging() throws IOException {
-        File files = new File(Constants.SERVER_LOG_DIRECTORY);
-        if (!files.exists())
-            files.mkdirs();
-        files = new File(Constants.SERVER_LOG_DIRECTORY+"EUROPE_Server.log");
-        if(!files.exists())
-            files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
-    }
 }

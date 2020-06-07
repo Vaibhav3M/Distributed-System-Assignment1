@@ -4,31 +4,25 @@ import Constants.Constants;
 import GameServers.DPSS_GameServerInterface;
 import Models.Player;
 import SendUDP.SendReceiveUDPMessage;
-import Utilities.CustomLogger;
 
-import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
 
     private static Lock lock = new ReentrantLock(true);
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static Logger LOGGER;
 
-    protected AmericanGameServerImpl() throws RemoteException {
+    protected AmericanGameServerImpl(Logger logger) throws RemoteException {
         super();
-        try {
-            setupLogging();
-        } catch (Exception e) {
-        }
-
+        LOGGER = logger;
     }
 
     @Override
@@ -119,7 +113,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     public String playerSignOut(String Username, String IPAddress) throws RemoteException {
 
         boolean isFromServerIP = (Integer.parseInt(IPAddress) == Constants.SERVER_IP_PORT_AMERICA);
-        System.out.println(isFromServerIP + " " + IPAddress);
+
         char playerKey = Username.charAt(0);
         try {
             lock.lock();
@@ -235,13 +229,4 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
     }
 
-    private static void setupLogging() throws IOException {
-        File files = new File(Constants.SERVER_LOG_DIRECTORY);
-        if (!files.exists())
-            files.mkdirs();
-        files = new File(Constants.SERVER_LOG_DIRECTORY + "AMERICA_Server.log");
-        if (!files.exists())
-            files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
-    }
 }

@@ -1,10 +1,10 @@
 package Utilities;
 
 import java.text.DateFormat;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
-        import java.util.logging.Formatter;
-        import java.util.logging.LogRecord;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
 /**
  * Define log format

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 
@@ -17,6 +18,7 @@ public class AdminClient {
 
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    static FileHandler fileHandler = null;
 
     private static int client_IP_Address = 132;
     private static String client_server_name = "";
@@ -125,6 +127,7 @@ public class AdminClient {
 
                 case 2:
                     LOGGER.info("Admin session over.");
+                    fileHandler.close();
                     System.out.println("Thank you for visiting our DPSS app");
                     exit = true;
                     break;
@@ -161,7 +164,7 @@ public class AdminClient {
         files = new File(Constants.ADMIN_LOG_DIRECTORY+"Admin.log");
         if(!files.exists())
             files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
+       fileHandler = CustomLogger.setup(files.getAbsolutePath());
     }
 
 

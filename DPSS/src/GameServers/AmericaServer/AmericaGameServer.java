@@ -10,11 +10,13 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AmericaGameServer {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    static FileHandler fileHandler = null;
 
     public static void recieve(AmericanGameServerImpl serverImpl) {
 
@@ -57,6 +59,7 @@ public class AmericaGameServer {
             System.out.println("IO exception" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
+            fileHandler.close();
         }
 
     }
@@ -66,7 +69,7 @@ public class AmericaGameServer {
         Thread server_america = new Thread(()->
         {
                 try {
-                    AmericanGameServerImpl serverImplementation = new AmericanGameServerImpl();
+                    AmericanGameServerImpl serverImplementation = new AmericanGameServerImpl(LOGGER);
                     //RMI setup
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_AMERICA);
                     registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);
@@ -93,6 +96,6 @@ public class AmericaGameServer {
         files = new File(Constants.SERVER_LOG_DIRECTORY+"AMERICA_Server.log");
         if(!files.exists())
             files.createNewFile();
-        CustomLogger.setup(files.getAbsolutePath());
+        fileHandler = CustomLogger.setup(files.getAbsolutePath());
     }
 }

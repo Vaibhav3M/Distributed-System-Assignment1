@@ -25,7 +25,7 @@ public class AmericaGameServer {
 
         try {
 
-            dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_AMERICA);
+            dataSocket = new DatagramSocket(Constants.SERVER_PORT_AMERICA);
             byte[] buffer = new byte[1000];
 
             LOGGER.info( "Server started..!!!");
@@ -71,9 +71,9 @@ public class AmericaGameServer {
                 try {
                     AmericanGameServerImpl serverImplementation = new AmericanGameServerImpl(LOGGER);
                     //RMI setup
-                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_AMERICA);
+                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_PORT_AMERICA);
                     registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);
-
+                    System.out.println(LocateRegistry.getRegistry(Constants.SERVER_PORT_AMERICA));
                     setupLogging();
 
                     //UDP setup

@@ -6,18 +6,18 @@ import java.net.*;
 public class SendReceiveUDPMessage {
 
 
-    public String getUDPResponse(String actionMessage, int client_IP_Address, int sender_IP_Address) {
+    public String getUDPResponse(String actionMessage, int client_PORT_Address, int sender_PORT_Address) {
 
         DatagramSocket datagramSocket = null;
-        String response = "No response from " + client_IP_Address;
+        String response = "No response from " + client_PORT_Address;
 
         try{
             datagramSocket = new DatagramSocket();
 
-            byte[] message = (sender_IP_Address+":"+actionMessage).getBytes();
+            byte[] message = (sender_PORT_Address+":"+actionMessage).getBytes();
             InetAddress hostAddress = InetAddress.getByName("localhost");
 
-            DatagramPacket request = new DatagramPacket(message,message.length,hostAddress,client_IP_Address);
+            DatagramPacket request = new DatagramPacket(message,message.length,hostAddress,client_PORT_Address);
             datagramSocket.send(request);
 
             byte[] buffer = new byte[1000];

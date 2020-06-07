@@ -25,7 +25,7 @@ public class EuropeGameServer {
 
         try {
 
-            dataSocket = new DatagramSocket(Constants.SERVER_IP_PORT_EUROPE);
+            dataSocket = new DatagramSocket(Constants.SERVER_PORT_EUROPE);
             byte[] buffer = new byte[1000];
 
             LOGGER.info( "Server started..!!!");
@@ -72,7 +72,7 @@ public class EuropeGameServer {
                 try {
                     EuropeGameServerImpl serverImplementation = new EuropeGameServerImpl(LOGGER);
                     //RMI setup
-                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_IP_PORT_EUROPE);
+                    Registry registry = LocateRegistry.createRegistry(Constants.SERVER_PORT_EUROPE);
                     registry.bind(Constants.SERVER_NAME_EUROPE, serverImplementation);
 
                     setupLogging();

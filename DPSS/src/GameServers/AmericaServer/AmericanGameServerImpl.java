@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
@@ -112,7 +111,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     @Override
     public String playerSignOut(String Username, String IPAddress) throws RemoteException {
 
-        boolean isFromServerIP = (Integer.parseInt(IPAddress) == Constants.SERVER_IP_PORT_AMERICA);
+        boolean isFromServerIP = (Integer.parseInt(IPAddress) == Constants.SERVER_IP_AMERICA);
 
         char playerKey = Username.charAt(0);
         try {
@@ -176,8 +175,8 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         String response_Europe = "";
 
         if (checkOtherServers) {
-            response_Asia = getPlayerStatusUDP(Constants.SERVER_IP_PORT_ASIA);
-            response_Europe = getPlayerStatusUDP(Constants.SERVER_IP_PORT_EUROPE);
+            response_Asia = getPlayerStatusUDP(Constants.SERVER_PORT_ASIA);
+            response_Europe = getPlayerStatusUDP(Constants.SERVER_PORT_EUROPE);
         }
 
         response = response + onlineCount + " online, " + offlineCount + " offline. " + response_Asia + response_Europe;
@@ -194,7 +193,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         Thread UDPThread = new Thread(() ->
         {
             try {
-                response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort, Constants.SERVER_IP_PORT_AMERICA);
+                response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort, Constants.SERVER_PORT_AMERICA);
 
             } catch (Exception e) {
                 System.out.println("Exception at getPlayerStatus: " + e.getLocalizedMessage());
@@ -218,15 +217,15 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
-        String check_asia = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_IP_PORT_ASIA, Constants.SERVER_IP_PORT_AMERICA);
-        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_IP_PORT_EUROPE, Constants.SERVER_IP_PORT_AMERICA);
+        String check_asia = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_ASIA, Constants.SERVER_PORT_AMERICA);
+        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_EUROPE, Constants.SERVER_PORT_AMERICA);
 
         return !check_asia.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
     }
 
     private void addDummyData() throws Exception {
-        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), false));
-        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_PORT_AMERICA), true));
+        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_AMERICA), false));
+        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_AMERICA), true));
     }
 
 }

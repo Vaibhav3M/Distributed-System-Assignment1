@@ -22,6 +22,7 @@ public class AdminClient {
 
     private static int client_IP_Address = 132;
     private static String client_server_name = "";
+    private static int server_port_number = 0;
     private static String adminUsername = "";
     private static String adminPassword = "";
     private static boolean adminLogin = false;
@@ -66,15 +67,19 @@ public class AdminClient {
 
             case 132:
                 client_server_name = Constants.SERVER_NAME_AMERICA;
+                server_port_number = Constants.SERVER_PORT_AMERICA;
                 break;
 
             case 93:
                 client_server_name = Constants.SERVER_NAME_EUROPE;
+                server_port_number = Constants.SERVER_PORT_EUROPE;
                 break;
 
             case 182:
                 client_server_name = Constants.SERVER_NAME_ASIA;
+                server_port_number = Constants.SERVER_PORT_ASIA;
                 break;
+
             default:
                 System.out.println("Invalid server IP");
 
@@ -82,7 +87,7 @@ public class AdminClient {
         System.out.println("*************** Welcome to " + client_server_name+" ****************");
         System.out.println("LOADING...... Please be patient");
 
-        Registry registry = LocateRegistry.getRegistry(client_IP_Address);
+        Registry registry = LocateRegistry.getRegistry(server_port_number);
         DPSS_GameServerInterface dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
 
         LOGGER.info( "Admin Session started at " + client_server_name + " on port " + client_IP_Address);

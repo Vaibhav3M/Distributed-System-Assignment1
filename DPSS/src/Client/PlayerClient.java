@@ -19,6 +19,7 @@ public class PlayerClient {
 
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
     private static int client_IP_Address = 0;
+    private static int server_port_number = 0;
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -60,14 +61,17 @@ public class PlayerClient {
 
 				case 132:
 					client_server_name = Constants.SERVER_NAME_AMERICA;
+                    server_port_number = Constants.SERVER_PORT_AMERICA;
 					break;
 
 				case 93:
 					client_server_name = Constants.SERVER_NAME_EUROPE;
+					server_port_number = Constants.SERVER_PORT_EUROPE;
 					break;
 
 				case 182:
 					client_server_name = Constants.SERVER_NAME_ASIA;
+					server_port_number = Constants.SERVER_PORT_ASIA;
 					break;
 				default:
 					System.out.println("Invalid server IP");
@@ -77,10 +81,10 @@ public class PlayerClient {
 		System.out.println("*************** Welcome to " + client_server_name+" ****************");
         System.out.println("LOADING...... Please be patient");
 
-        Registry registry = LocateRegistry.getRegistry(client_IP_Address);
+        Registry registry = LocateRegistry.getRegistry(server_port_number);
         dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
 
-        LOGGER.info("Activated : " + client_server_name + " at " + client_IP_Address);
+        LOGGER.info("Activated : " + client_server_name + " at " + server_port_number);
         boolean exit = false;
 
         while (!exit) {

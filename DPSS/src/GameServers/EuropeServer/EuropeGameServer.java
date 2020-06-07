@@ -29,7 +29,7 @@ public class EuropeGameServer {
             byte[] buffer = new byte[1000];
 
             LOGGER.info( "Server started..!!!");
-            System.out.println(Constants.SERVER_NAME_EUROPE + " started..!!!");
+            System.out.println(Constants.SERVER_NAME_EUROPE + " started at port " + Constants.SERVER_PORT_EUROPE);
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
@@ -60,7 +60,7 @@ public class EuropeGameServer {
             System.out.println(e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
-            fileHandler.close();
+            if (fileHandler != null) fileHandler.close();
         }
 
     }

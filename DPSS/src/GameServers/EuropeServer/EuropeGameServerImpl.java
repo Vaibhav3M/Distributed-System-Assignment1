@@ -23,7 +23,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
     protected EuropeGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
-
+        addDummyData();
     }
 
 
@@ -91,6 +91,11 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                     Player currPlayer = (Player) playerList.get(i);
                     if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
+                        if (currPlayer.isSignedIn()) {
+                            LOGGER.info("Player is already SignedIn - " + "Username=" + Username);
+                            return currPlayer.getUserName() + " is already logged in.";
+                        }
+
                         currPlayer.setSignedIn(true);
                         playerList.remove(i);
                         playerList.add(currPlayer);
@@ -132,6 +137,10 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                         if (isFromServerIP) {
                             LOGGER.info("Received RMI request - SignOut Player - " + Username);
 
+                            if (!currPlayer.isSignedIn()) {
+                                LOGGER.info("Player is not SignedIn - " + "Username=" + Username);
+                                return currPlayer.getUserName() + " is not signed in.";
+                            }
                             currPlayer.setSignedIn(false);
                             playerList.remove(i);
                             playerList.add(currPlayer);
@@ -144,7 +153,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return  "User not found";
+                return "User not found";
             }
         } finally {
             lock.unlock();
@@ -229,9 +238,35 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         return !check_american.equalsIgnoreCase("User not found") || !check_asia.equalsIgnoreCase("User not found");
     }
 
-    private void addDummyData() throws Exception {
-        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_AMERICA), false));
-        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_AMERICA), true));
+    private void addDummyData() {
+        addDummyDataHelper(new Player("Test", "Test", 21, "Test_Europe", "test123", String.valueOf(Constants.SERVER_IP_AMERICA), false));
+        addDummyDataHelper(new Player("John", "Human", 25, "John123", "john123", String.valueOf(Constants.SERVER_IP_AMERICA), true));
     }
 
+    private void addDummyDataHelper(Player player){
+
+        char playerKey = player.getUserName().charAt(0);
+
+        ArrayList<Player> playerList;
+
+        try {
+            lock.lock();
+
+            if (playersTable.containsKey(playerKey)) {
+
+                playerList = playersTable.get(playerKey);
+
+                playerList.add(player);
+
+            } else {
+                playerList = new ArrayList<>();
+                playerList.add(player);
+                playersTable.put(playerKey, playerList);
+
+            }
+        } finally {
+            lock.unlock();
+        }
+
+    }
 }

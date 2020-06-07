@@ -29,7 +29,7 @@ public class AmericaGameServer {
             byte[] buffer = new byte[1000];
 
             LOGGER.info( "Server started..!!!");
-            System.out.println(Constants.SERVER_NAME_AMERICA + " started..!!!");
+            System.out.println(Constants.SERVER_NAME_AMERICA + " started at port " + Constants.SERVER_PORT_AMERICA);
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
@@ -59,7 +59,7 @@ public class AmericaGameServer {
             System.out.println("IO exception" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
-            fileHandler.close();
+            if (fileHandler != null) fileHandler.close();
         }
 
     }
@@ -69,11 +69,11 @@ public class AmericaGameServer {
         Thread server_america = new Thread(()->
         {
                 try {
+
                     AmericanGameServerImpl serverImplementation = new AmericanGameServerImpl(LOGGER);
                     //RMI setup
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_PORT_AMERICA);
                     registry.bind(Constants.SERVER_NAME_AMERICA, serverImplementation);
-                    System.out.println(LocateRegistry.getRegistry(Constants.SERVER_PORT_AMERICA));
                     setupLogging();
 
                     //UDP setup

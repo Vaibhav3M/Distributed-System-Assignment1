@@ -29,7 +29,7 @@ public class AsiaGameServer {
             dataSocket = new DatagramSocket(Constants.SERVER_PORT_ASIA);
             byte[] buffer = new byte[1000];
             LOGGER.info( "Server started..!!!");
-            System.out.println(Constants.SERVER_NAME_ASIA + " started..!!!");
+            System.out.println(Constants.SERVER_NAME_ASIA + " started at port " + Constants.SERVER_PORT_ASIA);
             while (true) {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
@@ -58,7 +58,7 @@ public class AsiaGameServer {
             LOGGER.info("Exception at IO" +e.getLocalizedMessage());
         } finally {
             if (dataSocket != null) dataSocket.close();
-            fileHandler.close();
+            if (fileHandler != null) fileHandler.close();
         }
 
     }
@@ -72,8 +72,6 @@ public class AsiaGameServer {
                     //RMI setup
                     Registry registry = LocateRegistry.createRegistry(Constants.SERVER_PORT_ASIA);
                     registry.bind(Constants.SERVER_NAME_ASIA, serverImplementation);
-
-                    System.out.println(LocateRegistry.getRegistry(Constants.SERVER_PORT_ASIA));
 
                     //setup logger
                     setupLogging();

@@ -22,6 +22,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
     protected AmericanGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
+        addDummyData();
     }
 
     @Override
@@ -87,6 +88,10 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                     Player currPlayer = playerList.get(i);
                     if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
+                        if (currPlayer.isSignedIn()){
+                            LOGGER.info("Player is already SignedIn - " + "Username=" + Username);
+                            return currPlayer.getUserName() + " is already logged in.";
+                        }
                         currPlayer.setSignedIn(true);
                         playerList.remove(i);
                         playerList.add(currPlayer);
@@ -128,6 +133,10 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
                             LOGGER.info("Received RMI request - SignOut Player - " + Username);
 
+                            if (!currPlayer.isSignedIn()) {
+                                LOGGER.info("Player is not SignedIn - " + "Username=" + Username);
+                                return currPlayer.getUserName() + " is not signed in.";
+                            }
                             currPlayer.setSignedIn(false);
                             playerList.remove(i);
                             playerList.add(currPlayer);
@@ -223,9 +232,36 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         return !check_asia.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
     }
 
-    private void addDummyData() throws Exception {
-        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_IP_AMERICA), false));
-        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_IP_AMERICA), true));
+    private void addDummyData() {
+        addDummyDataHelper(new Player("Test", "Test", 21, "Test_America", "test123", String.valueOf(Constants.SERVER_IP_AMERICA), false));
+        addDummyDataHelper(new Player("Alex", "Alex", 21, "Alex1212", "alex123", String.valueOf(Constants.SERVER_IP_AMERICA), true));
+    }
+
+    private void addDummyDataHelper(Player player){
+
+        char playerKey = player.getUserName().charAt(0);
+
+        ArrayList<Player> playerList;
+
+        try {
+            lock.lock();
+
+            if (playersTable.containsKey(playerKey)) {
+
+                playerList = playersTable.get(playerKey);
+
+                playerList.add(player);
+
+            } else {
+                playerList = new ArrayList<>();
+                playerList.add(player);
+                playersTable.put(playerKey, playerList);
+
+            }
+        } finally {
+            lock.unlock();
+        }
+
     }
 
 }

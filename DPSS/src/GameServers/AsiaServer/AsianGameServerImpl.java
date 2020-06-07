@@ -24,6 +24,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     protected AsianGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
+        addDummyData();
     }
 
     @Override
@@ -33,7 +34,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         if (checkUserName(player.getUserName())) {
 
-            LOGGER.info("Username=" + player.getUserName() +" already existed");
+            LOGGER.info("Username=" + player.getUserName() + " already existed");
             return "Username already exists";
         }
 
@@ -50,7 +51,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                     Player currPlayer = playerList.get(i);
 
                     if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
-                        LOGGER.info("Username=" + player.getUserName() +" already existed");
+                        LOGGER.info("Username=" + player.getUserName() + " already existed");
 
                         return "UserName already exists";
                     }
@@ -73,7 +74,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     @Override
     public String playerSignIn(String Username, String Password, String IPAddress) throws RemoteException {
 
-        LOGGER.info("Received RMI request - SignIn Player - " + "Username=" +Username);
+        LOGGER.info("Received RMI request - SignIn Player - " + "Username=" + Username);
 
         char playerKey = Username.charAt(0);
 
@@ -86,6 +87,11 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                 for (int i = 0; i < playerList.size(); i++) {
                     Player currPlayer = playerList.get(i);
                     if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
+
+                        if (currPlayer.isSignedIn()) {
+                            LOGGER.info("Player is already SignedIn - " + "Username=" + Username);
+                            return currPlayer.getUserName() + " is already logged in.";
+                        }
 
                         currPlayer.setSignedIn(true);
                         playerList.remove(i);
@@ -128,6 +134,10 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                         if (isFromServerIP) {
                             LOGGER.info("Received RMI request - SignOut Player - " + Username);
 
+                            if (!currPlayer.isSignedIn()) {
+                                LOGGER.info("Player is not SignedIn - " + "Username=" + Username);
+                                return currPlayer.getUserName() + " is not signed in.";
+                            }
                             currPlayer.setSignedIn(false);
                             playerList.remove(i);
                             playerList.add(currPlayer);
@@ -140,13 +150,13 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return  "User not found";
+                return "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return  "User not found";
+        return "User not found";
     }
 
 
@@ -157,7 +167,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
             return "Username or password incorrect.";
         }
 
-        String response =  "AS: ";
+        String response = "AS: ";
         int onlineCount = 0;
         int offlineCount = 0;
 
@@ -187,7 +197,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
     private String getPlayerStatusUDP(int serverPort) {
 
-        LOGGER.info("Created UDP request - Get player status from port "+ serverPort);
+        LOGGER.info("Created UDP request - Get player status from port " + serverPort);
         String[] response = {"No response from " + serverPort};
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
@@ -195,7 +205,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         Thread UDPThread = new Thread(() ->
         {
             try {
-                response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort,Constants.SERVER_PORT_ASIA);
+                response[0] = sendReceiveUDPMessage.getUDPResponse("playerstatus", serverPort, Constants.SERVER_PORT_ASIA);
 
             } catch (Exception e) {
                 System.out.println("Exception at getplayerstatus" + e.getLocalizedMessage());
@@ -211,7 +221,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         } catch (Exception e) {
             System.out.println("Exception at getplayerstatus" + e.getLocalizedMessage());
         }
-        LOGGER.info("Received UDP response from "+ serverPort + " - " + response[0]);
+        LOGGER.info("Received UDP response from " + serverPort + " - " + response[0]);
         return response[0];
 
     }
@@ -219,16 +229,41 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
-        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_AMERICA,Constants.SERVER_PORT_ASIA);
-        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_EUROPE,Constants.SERVER_PORT_ASIA);
+        String check_american = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_AMERICA, Constants.SERVER_PORT_ASIA);
+        String check_europe = sendReceiveUDPMessage.getUDPResponse("UserName=" + userName, Constants.SERVER_PORT_EUROPE, Constants.SERVER_PORT_ASIA);
 
         return !check_american.equalsIgnoreCase("User not found") || !check_europe.equalsIgnoreCase("User not found");
     }
 
-    private void addDummyData() throws Exception {
-        createPlayerAccount(new Player("Alex", "Alex", 21, "Alex", "Alex", String.valueOf(Constants.SERVER_PORT_AMERICA), false));
-        createPlayerAccount(new Player("Test", "Test", 21, "american", "qwqwqw", String.valueOf(Constants.SERVER_PORT_AMERICA), true));
+    private void addDummyData() {
+        addDummyDataHelper(new Player("Test", "Test", 21, "Test_Asia", "test123", String.valueOf(Constants.SERVER_IP_AMERICA), false));
+        addDummyDataHelper(new Player("Yin", "Li", 21, "YinLi2", "yinli2", String.valueOf(Constants.SERVER_IP_AMERICA), true));
     }
 
+    private void addDummyDataHelper(Player player){
 
+        char playerKey = player.getUserName().charAt(0);
+
+        ArrayList<Player> playerList;
+
+        try {
+            lock.lock();
+
+            if (playersTable.containsKey(playerKey)) {
+
+                playerList = playersTable.get(playerKey);
+
+                playerList.add(player);
+
+            } else {
+                playerList = new ArrayList<>();
+                playerList.add(player);
+                playersTable.put(playerKey, playerList);
+
+            }
+        } finally {
+            lock.unlock();
+        }
+
+    }
 }

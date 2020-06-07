@@ -137,16 +137,17 @@ public class PlayerClient {
                     System.out.print("Please enter user name: ");
                     String userNameLogout = reader.readLine().trim();
 
-                    System.out.println();
-                    setupLogging(userNameLogout);
-                    LOGGER.info(userNameLogout + " attempted to sign out of " + client_server_name);
-
                     while (!Validations.validateIP(client_IP_Address)) {
 
                         System.out.print("Please enter IP starting (132, 93, 182): ");
                         client_IP_Address = getValidIntegerInput();
                     }
                     getServerFromIP(client_IP_Address);
+
+                    System.out.println();
+                    setupLogging(userNameLogout);
+                    LOGGER.info(userNameLogout + " attempted to sign out of " + client_server_name);
+
 
                     String result3 = dpss_gameServerInterface.playerSignOut(userNameLogout, String.valueOf(client_IP_Address));
                     LOGGER.info(result3);

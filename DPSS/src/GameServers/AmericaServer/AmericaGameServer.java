@@ -32,7 +32,7 @@ public class AmericaGameServer {
                 DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                 dataSocket.receive(request);
                 String requestMessage = new String(request.getData(), 0, request.getLength());
-                System.out.println(requestMessage);
+
 
                 LOGGER.info("Received UDP request message: " + requestMessage);
 

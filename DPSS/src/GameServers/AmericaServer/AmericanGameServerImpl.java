@@ -56,10 +56,10 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
                 for (int i = 0; i < playerList.size(); i++) {
                     Player currPlayer = playerList.get(i);
-                    System.out.println("Player list is : " + currPlayer.toString());
-                    if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
-                        LOGGER.info("Username=" + player.getUserName() + " already existed");
 
+                    if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
+
+                        LOGGER.info("Username=" + player.getUserName() + " already existed");
                         return "UserName already exists";
                     }
                 }
@@ -106,13 +106,13 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return Username + " not found";
+                return "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return Username + " not found";
+        return  "User not found";
     }
 
     @Override
@@ -147,13 +147,13 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return Username + " not found";
+                return  "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return Username + " not found";
+        return  "User not found";
     }
 
     @Override

@@ -54,7 +54,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
                 for (int i = 0; i < playerList.size(); i++) {
                     Player currPlayer = playerList.get(i);
-                    System.out.println("Player list is : " + currPlayer.toString());
+
                     if (currPlayer.getUserName().equalsIgnoreCase(player.getUserName())) {
                         LOGGER.info("Username=" + player.getUserName() + " already existed");
 
@@ -107,13 +107,13 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
 
-                return Username + " not found";
+                return "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return Username + " not found";
+        return "User not found";
     }
 
     @Override
@@ -147,13 +147,13 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return Username + " not found";
+                return  "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return Username + " not found";
+        return "User not found";
     }
 
     @Override

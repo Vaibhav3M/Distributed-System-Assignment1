@@ -1,0 +1,24 @@
+07/06/2020 08:42:15.925 - [INFO] - Test_User request to create new account on AmericaGameServer
+
+07/06/2020 08:42:15.926 - [INFO] - Successful
+
+07/06/2020 08:43:00.826 - [INFO] - Test_User attempted to sign in on AmericaGameServer
+
+07/06/2020 08:43:00.828 - [INFO] - Test_User has logged in.
+
+07/06/2020 08:44:41.350 - [INFO] - Test_User attempted to sign in on AmericaGameServer
+
+07/06/2020 08:44:41.352 - [INFO] - Test_User is already logged in.
+
+07/06/2020 08:46:36.245 - [INFO] - Test_User attempted to sign out of AmericaGameServer
+
+07/06/2020 08:46:36.247 - [INFO] - Test_User has logged out.
+
+07/06/2020 08:47:05.483 - [INFO] - Test_User attempted to sign out of AmericaGameServer
+
+07/06/2020 08:47:05.484 - [INFO] - Test_User is not signed in.
+
+07/06/2020 08:49:44.291 - [INFO] - Test_User request to create new account on EuropeGameServer
+
+07/06/2020 08:49:44.291 - [INFO] - Username already exists
+

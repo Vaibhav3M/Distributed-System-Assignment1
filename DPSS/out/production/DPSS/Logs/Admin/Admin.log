@@ -1,0 +1,36 @@
+07/06/2020 08:38:37.249 - [INFO] - Admin Session started at  on port 0
+
+07/06/2020 08:51:06.162 - [INFO] - Admin logged in successfully at 93
+
+07/06/2020 08:51:09.697 - [INFO] - Admin requested player info at 93
+
+07/06/2020 08:51:09.697 - [INFO] - Info received: EU: 1 online, 1 offline. AS: 1 online, 1 offline. NA: 1 online, 2 offline. 
+
+07/06/2020 08:51:43.962 - [INFO] - Admin requested player info at 93
+
+07/06/2020 08:51:43.962 - [INFO] - Info received: EU: 1 online, 1 offline. AS: 1 online, 1 offline. NA: 1 online, 2 offline. 
+
+07/06/2020 08:52:10.671 - [INFO] - Admin logged in successfully at 182
+
+07/06/2020 08:52:21.795 - [INFO] - Admin requested player info at 182
+
+07/06/2020 08:52:21.796 - [INFO] - Info received: AS: 1 online, 1 offline. NA: 1 online, 2 offline. EU: 1 online, 1 offline. 
+
+07/06/2020 08:53:59.496 - [INFO] - Admin logged in successfully at 132
+
+07/06/2020 08:54:23.660 - [INFO] - Invalid log in attempt at 0
+
+07/06/2020 08:55:05.857 - [INFO] - Invalid log in attempt at 0
+
+07/06/2020 10:26:33.520 - [INFO] - Admin logged in successfully at 93
+
+07/06/2020 10:26:42.398 - [INFO] - Admin requested player info at 93
+
+07/06/2020 10:26:42.398 - [INFO] - Info received: EU: 1 online, 1 offline. AS: 1 online, 1 offline. NA: 1 online, 1 offline. 
+
+07/06/2020 10:32:52.838 - [INFO] - Admin requested player info at 93
+
+07/06/2020 10:32:52.838 - [INFO] - Info received: EU: 1 online, 2 offline. AS: 1 online, 2 offline. NA: 1 online, 1 offline. 
+
+07/06/2020 10:32:57.133 - [INFO] - Admin session over at 93
+

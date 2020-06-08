@@ -1,0 +1,68 @@
+07/06/2020 08:38:24.144 - [INFO] - Server started..!!!
+
+07/06/2020 08:42:15.893 - [INFO] - Received UDP request message: 2421:UserName=Test_User
+
+07/06/2020 08:42:15.894 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 08:49:44.289 - [INFO] - Received UDP request message: 5892:UserName=Test_User
+
+07/06/2020 08:49:44.289 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 08:51:09.694 - [INFO] - Received UDP request message: 5892:playerstatus
+
+07/06/2020 08:51:09.695 - [INFO] - Sent UDP response message: AS: 1 online, 1 offline. 
+
+07/06/2020 08:51:43.959 - [INFO] - Received UDP request message: 5892:playerstatus
+
+07/06/2020 08:51:43.959 - [INFO] - Sent UDP response message: AS: 1 online, 1 offline. 
+
+07/06/2020 08:52:21.785 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 08:52:21.792 - [INFO] - Received UDP response from 2421 - NA: 1 online, 2 offline. 
+
+07/06/2020 08:52:21.793 - [INFO] - Created UDP request - Get player status from port 5892
+
+07/06/2020 08:52:21.794 - [INFO] - Received UDP response from 5892 - EU: 1 online, 1 offline. 
+
+07/06/2020 10:26:07.198 - [INFO] - Server started..!!!
+
+07/06/2020 10:26:42.389 - [INFO] - Received UDP request message: 5892:playerstatus
+
+07/06/2020 10:26:42.390 - [INFO] - Sent UDP response message: AS: 1 online, 1 offline. 
+
+07/06/2020 10:28:26.370 - [INFO] - Received RMI request - Create Player - Player{firstName='vaibhav', lastName='malhotra', age=23, userName='vaibhavM', password='vaibhav123', IPAddress='182', signedIn=false}
+
+07/06/2020 10:28:26.374 - [INFO] - Player Created successfully - Player{firstName='vaibhav', lastName='malhotra', age=23, userName='vaibhavM', password='vaibhav123', IPAddress='182', signedIn=false}
+
+07/06/2020 10:28:49.540 - [INFO] - Received RMI request - SignIn Player - Username=vaibhavM
+
+07/06/2020 10:28:49.540 - [INFO] - Player SignedIn - Username=vaibhavM
+
+07/06/2020 10:29:23.251 - [INFO] - Received RMI request - SignIn Player - Username=vaibhavM
+
+07/06/2020 10:29:23.251 - [INFO] - Player is already SignedIn - Username=vaibhavM
+
+07/06/2020 10:29:54.417 - [INFO] - Received RMI request - SignOut Player - vaibhavM
+
+07/06/2020 10:29:54.417 - [INFO] - Player SignedOut - Username=vaibhavM
+
+07/06/2020 10:31:31.815 - [INFO] - Received UDP request message: 5892:UserName=test_test
+
+07/06/2020 10:31:31.815 - [INFO] - Player not found - Username=test_test
+
+07/06/2020 10:31:31.815 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 10:32:40.420 - [INFO] - Received UDP request message: 2421:UserName=test_test
+
+07/06/2020 10:32:40.421 - [INFO] - Player not found - Username=test_test
+
+07/06/2020 10:32:40.421 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 10:32:52.835 - [INFO] - Received UDP request message: 5892:playerstatus
+
+07/06/2020 10:32:52.836 - [INFO] - Sent UDP response message: AS: 1 online, 2 offline. 
+
+07/06/2020 10:33:29.173 - [INFO] - Received UDP request message: 5892:playerstatus
+
+07/06/2020 10:33:29.173 - [INFO] - Sent UDP response message: AS: 1 online, 2 offline. 
+

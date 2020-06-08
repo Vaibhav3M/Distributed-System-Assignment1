@@ -1,0 +1,72 @@
+07/06/2020 08:38:26.921 - [INFO] - Server started..!!!
+
+07/06/2020 08:42:15.896 - [INFO] - Received UDP request message: 2421:UserName=Test_User
+
+07/06/2020 08:42:15.896 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 08:49:44.285 - [INFO] - Received RMI request - Create Player - Player{firstName='Test1', lastName='Test1', age=21, userName='Test_User', password='test123', IPAddress='93', signedIn=false}
+
+07/06/2020 08:49:44.289 - [INFO] - Username=Test_User already existed
+
+07/06/2020 08:51:09.690 - [INFO] - Created UDP request - Get player status from port 8091
+
+07/06/2020 08:51:09.695 - [INFO] - Received UDP response from 8091 - AS: 1 online, 1 offline. 
+
+07/06/2020 08:51:09.695 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 08:51:09.697 - [INFO] - Received UDP response from 2421 - NA: 1 online, 2 offline. 
+
+07/06/2020 08:51:43.957 - [INFO] - Created UDP request - Get player status from port 8091
+
+07/06/2020 08:51:43.959 - [INFO] - Received UDP response from 8091 - AS: 1 online, 1 offline. 
+
+07/06/2020 08:51:43.960 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 08:51:43.961 - [INFO] - Received UDP response from 2421 - NA: 1 online, 2 offline. 
+
+07/06/2020 08:52:21.793 - [INFO] - Received UDP request message: 8091:playerstatus
+
+07/06/2020 08:52:21.793 - [INFO] - Sent UDP response message: EU: 1 online, 1 offline. 
+
+07/06/2020 10:26:10.055 - [INFO] - Server started..!!!
+
+07/06/2020 10:26:42.382 - [INFO] - Created UDP request - Get player status from port 8091
+
+07/06/2020 10:26:42.392 - [INFO] - Received UDP response from 8091 - AS: 1 online, 1 offline. 
+
+07/06/2020 10:26:42.392 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 10:26:42.396 - [INFO] - Received UDP response from 2421 - NA: 1 online, 1 offline. 
+
+07/06/2020 10:28:26.373 - [INFO] - Received UDP request message: 8091:UserName=vaibhavM
+
+07/06/2020 10:28:26.374 - [INFO] - Player not found - Username=vaibhavM
+
+07/06/2020 10:28:26.374 - [INFO] - Sent UDP response message: User not found
+
+07/06/2020 10:31:31.813 - [INFO] - Received RMI request - Create Player - Player{firstName='test', lastName='test', age=23, userName='test_test', password='test@123', IPAddress='93', signedIn=false}
+
+07/06/2020 10:31:31.815 - [INFO] - Player Created successfully - Player{firstName='test', lastName='test', age=23, userName='test_test', password='test@123', IPAddress='93', signedIn=false}
+
+07/06/2020 10:32:40.422 - [INFO] - Received UDP request message: 2421:UserName=test_test
+
+07/06/2020 10:32:40.422 - [INFO] - Player SignedOut - Username=test_test
+
+07/06/2020 10:32:40.422 - [INFO] - Sent UDP response message: test_test has logged out.
+
+07/06/2020 10:32:52.834 - [INFO] - Created UDP request - Get player status from port 8091
+
+07/06/2020 10:32:52.836 - [INFO] - Received UDP response from 8091 - AS: 1 online, 2 offline. 
+
+07/06/2020 10:32:52.836 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 10:32:52.837 - [INFO] - Received UDP response from 2421 - NA: 1 online, 1 offline. 
+
+07/06/2020 10:33:29.172 - [INFO] - Created UDP request - Get player status from port 8091
+
+07/06/2020 10:33:29.173 - [INFO] - Received UDP response from 8091 - AS: 1 online, 2 offline. 
+
+07/06/2020 10:33:29.174 - [INFO] - Created UDP request - Get player status from port 2421
+
+07/06/2020 10:33:29.174 - [INFO] - Received UDP response from 2421 - NA: 1 online, 1 offline. 
+

@@ -3,6 +3,7 @@
 ## Distributed Player Status System (DPSS) using Java RMI
 
 Submitted By : Vaibhav Malhotra - 40079373
+Github link : https://github.com/Vaibhav3M/Distributed-System-Assignment1/
 
 ## Build and Run
 

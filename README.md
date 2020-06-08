@@ -40,3 +40,28 @@ java -cp . GameServers.AsiaServer.AsiaGameServer
 ```
 java -cp . Client.PlayerClient
 java -cp . Client.AdminClient
+```
+
+
+## Concepts implemented
+
+### 1.	RMI
+Remote Method Invocation has been used to invoke client requests on the servers based on user’s IP address.
+
+### 2.	UDP
+For below communication between server UDP is used:
+-	getPlayerStatus() – When admin requests this method on a server, that server sends UDP request to other two servers to get the player info.
+-	createPlayer() – When a user tries to create a new player on a server, that server sends a UDP request to other servers to check if Username already exists.
+
+### 3.	Multi-threading
+-	All servers run on their individual thread
+-	All UDP requests are sent on a new thread
+- All client requests are sent on a new thread
+
+### 4.	Locks and HashTable 
+- Player data on server are stored in a Hashtables. Hashtables are thread-safe and promote concurrency.
+-	Lock (ReentrantLock) is used for proper synchronization to allow multiple users to perform operations for the same or different accounts at the same time. 
+
+
+## Test screenshots are avilable in [Report](https://github.com/Vaibhav3M/Distributed-System-Assignment1/blob/master/Assignment1-Report.pdf)
+

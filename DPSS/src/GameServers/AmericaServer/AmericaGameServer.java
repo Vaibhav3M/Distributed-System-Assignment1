@@ -13,11 +13,21 @@ import java.rmi.registry.Registry;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+/**
+ * The type America game server.
+ */
 public class AmericaGameServer {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    // to manage log files
     static FileHandler fileHandler = null;
 
+    /**
+     * Recieve - Setup UDP server to recieve requests.
+     *
+     * @param serverImpl the server
+     */
     public static void recieve(AmericanGameServerImpl serverImpl) {
 
         String responseString = "";
@@ -64,6 +74,12 @@ public class AmericaGameServer {
 
     }
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     * @throws Exception the exception
+     */
     public static void main(String args[]) throws Exception {
 
         Thread server_america = new Thread(()->
@@ -89,6 +105,9 @@ public class AmericaGameServer {
 
     }
 
+    /**
+     * setupLogging. - Setup logger for the class
+     */
     private static void setupLogging() throws IOException {
         File files = new File(Constants.SERVER_LOG_DIRECTORY);
         if (!files.exists())

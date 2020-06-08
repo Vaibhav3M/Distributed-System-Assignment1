@@ -13,14 +13,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+/**
+ * The type Asian game server.
+ */
 public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
     private static final long serialVersionUID = 7526472295622776147L;
 
+    //lock to enable synchronization
     private static Lock lock = new ReentrantLock(true);
+    //to store player info
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable<>();
+    //to log activities in a log file
     private static Logger LOGGER;
 
 
+    /**
+     * Instantiates a new Asian game server.
+     *
+     * @param logger the logger
+     * @throws RemoteException the remote exception
+     */
     protected AsianGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
@@ -32,6 +44,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         LOGGER.info("Received RMI request - Create Player - " + player.toString());
 
+        //check if username exists
         if (checkUserName(player.getUserName())) {
 
             LOGGER.info("Username=" + player.getUserName() + " already existed");
@@ -42,7 +55,9 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         ArrayList<Player> playerList;
 
         try {
+            // lock while performing operations
             lock.lock();
+
             if (playersTable.containsKey(playerKey)) {
 
                 playerList = playersTable.get(playerKey);
@@ -63,6 +78,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
                 playersTable.put(playerKey, playerList);
             }
         } finally {
+            //unlock once operation complete
             lock.unlock();
         }
 
@@ -79,6 +95,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         char playerKey = Username.charAt(0);
 
         try {
+            // lock while performing operations
             lock.lock();
             if (playersTable.containsKey(playerKey)) {
 
@@ -122,6 +139,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         char playerKey = Username.charAt(0);
 
         try {
+            // lock while performing operations
             lock.lock();
             if (playersTable.containsKey(playerKey)) {
 
@@ -186,15 +204,23 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
         String response_America = "";
         String response_Europe = "";
 
+        //Send UDP requests to other servers
         if (checkOtherServers) {
             response_America = getPlayerStatusUDP(Constants.SERVER_PORT_AMERICA);
             response_Europe = getPlayerStatusUDP(Constants.SERVER_PORT_EUROPE);
         }
 
+        //append the results
         response = response + onlineCount + " online, " + offlineCount + " offline. " + response_America + response_Europe;
         return response;
     }
 
+    /**
+     * getPlayerStatusUDP.
+     *
+     * @param serverPort - port to which UDP request is sent
+     * @return the UDP response
+     */
     private String getPlayerStatusUDP(int serverPort) {
 
         LOGGER.info("Created UDP request - Get player status from port " + serverPort);
@@ -202,6 +228,7 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
+        //create a new thread for UDP request
         Thread UDPThread = new Thread(() ->
         {
             try {
@@ -226,6 +253,12 @@ public class AsianGameServerImpl extends UnicastRemoteObject implements DPSS_Gam
 
     }
 
+    /**
+     * checkUserName - to check if username exists on other servers using UDP
+     *
+     * @param userName - username to check
+     * @return  username status
+     */
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 

@@ -14,10 +14,15 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 
+/**
+ * The Admin client class.
+ */
 public class AdminClient {
 
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
+    // to manage log files
     static FileHandler fileHandler = null;
 
     private static int client_IP_Address = 0;
@@ -26,9 +31,10 @@ public class AdminClient {
     private static String adminUsername = "";
     private static String adminPassword = "";
     private static boolean adminLogin = false;
+    // gameserver interface object
     private static DPSS_GameServerInterface dpss_gameServerInterface =null;
 
-    //Return basic menu.
+    //Return Admin menu.
     private static int showMenu() throws Exception
     {
         int userinput = 1;
@@ -54,44 +60,18 @@ public class AdminClient {
     }
 
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     * @throws Exception the exception
+     */
     public static void main(String args[]) throws Exception{
 
+        //setup for logger
         setupLogging();
 
-//        System.out.println("Please enter IP : (132, 93, 182)");
-//
-//        client_IP_Address = getValidIntegerInput();
-//
-//        switch (client_IP_Address){
-//
-//            case 132:
-//                client_server_name = Constants.SERVER_NAME_AMERICA;
-//                server_port_number = Constants.SERVER_PORT_AMERICA;
-//                break;
-//
-//            case 93:
-//                client_server_name = Constants.SERVER_NAME_EUROPE;
-//                server_port_number = Constants.SERVER_PORT_EUROPE;
-//                break;
-//
-//            case 182:
-//                client_server_name = Constants.SERVER_NAME_ASIA;
-//                server_port_number = Constants.SERVER_PORT_ASIA;
-//                break;
-//
-//            default:
-//                System.out.println("Invalid server IP");
-//
-//        }
-//        System.out.println("*************** Welcome to " + client_server_name+" ****************");
-//        System.out.println("LOADING...... Please be patient");
-//
-//        Registry registry = LocateRegistry.getRegistry(server_port_number);
-//        DPSS_GameServerInterface dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
-
         System.out.println("\n**** Welcome to DPSS Game ****\n");
-
-
 
         LOGGER.info( "Admin Session started at " + client_server_name + " on port " + client_IP_Address);
         System.out.println(client_server_name + " at " + client_IP_Address +  " Activated");
@@ -104,6 +84,7 @@ public class AdminClient {
 
             switch (userinput) {
 
+                //login for admin
                 case 1:
                     adminLogin = false;
                     client_IP_Address = 0;
@@ -136,9 +117,9 @@ public class AdminClient {
                             System.out.println();
                         }
                     }
-
                     break;
 
+                //get player status for admin
                 case 2:
                     if(!adminLogin) {
                         System.out.println("Error: Please login to access this functionality.");
@@ -153,6 +134,7 @@ public class AdminClient {
                     System.out.println();
                     break;
 
+                //end admin session
                 case 3:
                     LOGGER.info("Admin session over at " + client_IP_Address);
                     if (fileHandler != null) fileHandler.close();
@@ -164,8 +146,12 @@ public class AdminClient {
         }
     }
 
+    /**
+     * getServerFromIP. - This method takes IP by user and gets RMI registry
+     *
+     * @param client_IP_Address IP address entered by user
+     */
     private static void getServerFromIP(int client_IP_Address){
-
 
         switch (client_IP_Address) {
 
@@ -191,7 +177,9 @@ public class AdminClient {
 
         try {
             System.out.println("***** Verifying info from server. Please wait. *****");
+            //get registry for port number
             Registry registry = LocateRegistry.getRegistry(server_port_number);
+            // initilize the interface object
             dpss_gameServerInterface = (DPSS_GameServerInterface) registry.lookup(client_server_name);
 
         }catch (Exception e){
@@ -199,6 +187,10 @@ public class AdminClient {
         }
     }
 
+    /**
+     * getValidIntegerInput. - Takes input from console and validates proper integer
+     *
+     */
     private static int getValidIntegerInput() {
 
         int value = 0;
@@ -209,9 +201,9 @@ public class AdminClient {
                 if(input.contains(".")){
                     input = input.split("\\.")[0];
                 }
-                value = Integer.valueOf(input);
+                value = Integer.parseInt(input);
                 inputValid = true;
-                //logger.info("User selected " + value);
+
             } catch (Exception e) {
                 System.out.println("This field requires a number value. Please try again");
             }
@@ -220,6 +212,10 @@ public class AdminClient {
         return value;
     }
 
+    /**
+     * setupLogging. - Setup logger for the class
+     *
+     */
     private static void setupLogging() throws IOException {
         File files = new File(Constants.ADMIN_LOG_DIRECTORY);
         if (!files.exists())

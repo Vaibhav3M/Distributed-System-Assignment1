@@ -7,7 +7,7 @@ import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
 /**
- * Define log format
+ * Class to format logs
  */
 public class logFormatter extends Formatter {
 
@@ -22,9 +22,8 @@ public class logFormatter extends Formatter {
         builder.append(formatMessage(record));
         builder.append("\n");
         builder.append("\n");
-//      builder.append("[").append(record.getSourceClassName()).append(".");
-//      builder.append(record.getSourceMethodName()).append("] - ");
         return builder.toString();
     }
-
+//      builder.append("[").append(record.getSourceClassName()).append(".");
+//      builder.append(record.getSourceMethodName()).append("] - ");
 }

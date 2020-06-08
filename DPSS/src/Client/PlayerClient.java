@@ -15,6 +15,9 @@ import java.rmi.registry.Registry;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+/**
+ * The Player client class.
+ */
 public class PlayerClient {
 
     private static BufferedReader reader = new BufferedReader((new InputStreamReader(System.in)));
@@ -23,6 +26,7 @@ public class PlayerClient {
     private static String client_server_name = "";
     private static DPSS_GameServerInterface dpss_gameServerInterface = null;
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     static FileHandler fileHandler = null;
 
 
@@ -49,40 +53,14 @@ public class PlayerClient {
     }
 
 
-	public static void main(String args[]) throws Exception {
+    /**
+     * Main.
+     *
+     * @param args the args
+     * @throws Exception the exception
+     */
+    public static void main(String args[]) throws Exception {
 
-//        setupLogging("general");
-//		while (!Validations.validateIP(client_IP_Address)) {
-//
-//			System.out.println("Please enter IP : (132, 93, 182)");
-//			client_IP_Address = getValidIntegerInput();
-//
-//			switch (client_IP_Address) {
-//
-//				case 132:
-//					client_server_name = Constants.SERVER_NAME_AMERICA;
-//                    server_port_number = Constants.SERVER_PORT_AMERICA;
-//					break;
-//
-//				case 93:
-//					client_server_name = Constants.SERVER_NAME_EUROPE;
-//					server_port_number = Constants.SERVER_PORT_EUROPE;
-//					break;
-//
-//				case 182:
-//					client_server_name = Constants.SERVER_NAME_ASIA;
-//					server_port_number = Constants.SERVER_PORT_ASIA;
-//					break;
-//				default:
-//					System.out.println("Invalid server IP");
-//
-//			}
-//		}
-//		System.out.println("*************** Welcome to " + client_server_name+" ****************");
-//        System.out.println("LOADING...... Please be patient");
-
-
-        //LOGGER.info("Activated : " + client_server_name + " at " + server_port_number);
         boolean exit = false;
 
         while (!exit) {
@@ -171,6 +149,11 @@ public class PlayerClient {
         }
     }
 
+    /**
+     * createPlayer. - Validates and creates Player object
+     *
+     * @throws  Exception
+     */
     private static Player createPlayer() throws Exception {
 
         // inputting first name
@@ -229,6 +212,11 @@ public class PlayerClient {
 
     }
 
+    /**
+     * getServerFromIP. - This method takes IP by user and gets RMI registry
+     *
+     * @param client_IP_Address IP address entered by user
+     */
     private static void getServerFromIP(int client_IP_Address){
 
 
@@ -264,6 +252,10 @@ public class PlayerClient {
         }
     }
 
+    /**
+     * getValidIntegerInput. - Takes input from console and validates proper integer
+     *
+     */
 	private static int getValidIntegerInput() {
 
 		int value = 0;
@@ -285,7 +277,10 @@ public class PlayerClient {
 		return value;
 	}
 
-
+    /**
+     * setupLogging. - Setup logger for the class
+     * @param name - to create log file for player username
+     */
     private static void setupLogging(String name) throws IOException {
         File files = new File(Constants.PLAYER_LOG_DIRECTORY);
         if (!files.exists())

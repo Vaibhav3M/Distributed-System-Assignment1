@@ -13,16 +13,28 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+/**
+ * The type American game server.
+ */
 public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
 
+    //lock to enable synchronization
     private static Lock lock = new ReentrantLock(true);
+    //to store player info
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
+    //to log activities in a log file
     private static Logger LOGGER;
 
+    /**
+     * Instantiates a new American game server.
+     *
+     * @param logger the logger
+     * @throws RemoteException the remote exception
+     */
     protected AmericanGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
-        addDummyData();
+        addDummyData();  // to add dummy data
     }
 
     @Override
@@ -30,6 +42,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         LOGGER.info("Received RMI request - Create Player - " + player.toString());
 
+        //check if username exists
         if (checkUserName(player.getUserName())) {
 
             LOGGER.info("Username=" + player.getUserName() + " already existed");
@@ -42,6 +55,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         ArrayList<Player> playerList;
 
         try {
+            // lock while performing operations
             lock.lock();
 
             if (playersTable.containsKey(playerKey)) {
@@ -64,6 +78,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                 playersTable.put(playerKey, playerList);
             }
         } finally {
+            //unlock once operation complete
             lock.unlock();
         }
 
@@ -79,7 +94,9 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         char playerKey = Username.charAt(0);
         try {
+            // lock while performing operations
             lock.lock();
+
             if (playersTable.containsKey(playerKey)) {
 
                 ArrayList<Player> playerList = playersTable.get(playerKey);
@@ -88,7 +105,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                     Player currPlayer = playerList.get(i);
                     if (currPlayer.getUserName().equalsIgnoreCase(Username) && currPlayer.getPassword().equalsIgnoreCase(Password)) {
 
-                        if (currPlayer.isSignedIn()){
+                        if (currPlayer.isSignedIn()) {
                             LOGGER.info("Player is already SignedIn - " + "Username=" + Username);
                             return currPlayer.getUserName() + " is already logged in.";
                         }
@@ -110,7 +127,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
             lock.unlock();
         }
 
-        return  "User not found";
+        return "User not found";
     }
 
     @Override
@@ -120,7 +137,10 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         char playerKey = Username.charAt(0);
         try {
+
+            // lock while performing operations
             lock.lock();
+
             if (playersTable.containsKey(playerKey)) {
 
                 ArrayList<Player> playerList = playersTable.get(playerKey);
@@ -149,13 +169,13 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
                 }
             } else {
                 LOGGER.info("Player not found - " + "Username=" + Username);
-                return  "User not found";
+                return "User not found";
             }
         } finally {
             lock.unlock();
         }
 
-        return  "User not found";
+        return "User not found";
     }
 
     @Override
@@ -183,15 +203,23 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         String response_Asia = "";
         String response_Europe = "";
 
+        //Send UDP requests to other servers
         if (checkOtherServers) {
             response_Asia = getPlayerStatusUDP(Constants.SERVER_PORT_ASIA);
             response_Europe = getPlayerStatusUDP(Constants.SERVER_PORT_EUROPE);
         }
 
+        //append the results
         response = response + onlineCount + " online, " + offlineCount + " offline. " + response_Asia + response_Europe;
         return response;
     }
 
+    /**
+     * getPlayerStatusUDP.
+     *
+     * @param serverPort - port to which UDP request is sent
+     * @return the UDP response
+     */
     private String getPlayerStatusUDP(int serverPort) {
 
         LOGGER.info("Created UDP request - Get player status from port " + serverPort);
@@ -199,6 +227,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
+        //create a new thread for UDP request
         Thread UDPThread = new Thread(() ->
         {
             try {
@@ -222,7 +251,12 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         return response[0];
 
     }
-
+    /**
+     * checkUserName - to check if username exists on other servers using UDP
+     *
+     * @param userName - username to check
+     * @return  username status
+     */
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
@@ -237,7 +271,7 @@ public class AmericanGameServerImpl extends UnicastRemoteObject implements DPSS_
         addDummyDataHelper(new Player("Alex", "Alex", 21, "Alex1212", "alex123", String.valueOf(Constants.SERVER_IP_AMERICA), true));
     }
 
-    private void addDummyDataHelper(Player player){
+    private void addDummyDataHelper(Player player) {
 
         char playerKey = player.getUserName().charAt(0);
 

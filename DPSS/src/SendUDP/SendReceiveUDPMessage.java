@@ -3,9 +3,20 @@ package SendUDP;
 import java.io.IOException;
 import java.net.*;
 
+/**
+ * The Send udp request message.
+ */
 public class SendReceiveUDPMessage {
 
 
+    /**
+     * Gets udp response.
+     *
+     * @param actionMessage       the action message
+     * @param client_PORT_Address the client port address
+     * @param sender_PORT_Address the sender port address
+     * @return the udp response
+     */
     public String getUDPResponse(String actionMessage, int client_PORT_Address, int sender_PORT_Address) {
 
         DatagramSocket datagramSocket = null;
@@ -41,6 +52,5 @@ public class SendReceiveUDPMessage {
         return response;
 
     }
-
 
 }

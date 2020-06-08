@@ -13,13 +13,25 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+/**
+ * The type Europe game server.
+ */
 public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_GameServerInterface {
 
+    //lock to enable synchronization
     private static Lock lock = new ReentrantLock(true);
+    //to store player info
     private static Hashtable<Character, ArrayList<Player>> playersTable = new Hashtable();
+    //to log activities in a log file
     private static Logger LOGGER;
 
 
+    /**
+     * Instantiates a new Europe game server.
+     *
+     * @param logger the logger
+     * @throws RemoteException the remote exception
+     */
     protected EuropeGameServerImpl(Logger logger) throws RemoteException {
         super();
         LOGGER = logger;
@@ -32,6 +44,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
         LOGGER.info("Received RMI request - Create Player - " + player.toString());
 
+        //check if username exists
         if (checkUserName(player.getUserName())) {
             LOGGER.info("Username=" + player.getUserName() + " already existed");
 
@@ -43,6 +56,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         ArrayList<Player> playerList;
 
         try {
+            // lock while performing operations
             lock.lock();
 
             if (playersTable.containsKey(playerKey)) {
@@ -66,6 +80,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
             }
 
         } finally {
+            //unlock once operation complete
             lock.unlock();
         }
 
@@ -82,6 +97,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         char playerKey = Username.charAt(0);
 
         try {
+            // lock while performing operations
             lock.lock();
             if (playersTable.containsKey(playerKey)) {
 
@@ -125,6 +141,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
         char playerKey = Username.charAt(0);
         try {
+            // lock while performing operations
             lock.lock();
             if (playersTable.containsKey(playerKey)) {
 
@@ -188,15 +205,23 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
         String response_Asia = "";
         String response_America = "";
 
+        //Send UDP requests to other servers
         if (checkOtherServers) {
             response_Asia = getPlayerStatusUDP(Constants.SERVER_PORT_ASIA);
             response_America = getPlayerStatusUDP(Constants.SERVER_PORT_AMERICA);
         }
 
+        //append the results
         response = response + onlineCount + " online, " + offlineCount + " offline. " + response_Asia + response_America;
         return response;
     }
 
+    /**
+     * getPlayerStatusUDP.
+     *
+     * @param serverPort - port to which UDP request is sent
+     * @return the UDP response
+     */
     private String getPlayerStatusUDP(int serverPort) {
 
         LOGGER.info("Created UDP request - Get player status from port " + serverPort);
@@ -204,6 +229,7 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 
+        //create a new thread for UDP request
         Thread UDPThread = new Thread(() ->
         {
             try {
@@ -229,6 +255,12 @@ public class EuropeGameServerImpl extends UnicastRemoteObject implements DPSS_Ga
 
     }
 
+    /**
+     * checkUserName - to check if username exists on other servers using UDP
+     *
+     * @param userName - username to check
+     * @return  username status
+     */
     private boolean checkUserName(String userName) {
         SendReceiveUDPMessage sendReceiveUDPMessage = new SendReceiveUDPMessage();
 

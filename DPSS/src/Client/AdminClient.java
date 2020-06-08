@@ -73,9 +73,6 @@ public class AdminClient {
 
         System.out.println("\n**** Welcome to DPSS Game ****\n");
 
-        LOGGER.info( "Admin Session started at " + client_server_name + " on port " + client_IP_Address);
-        System.out.println(client_server_name + " at " + client_IP_Address +  " Activated");
-        System.out.println();
 
         boolean exit = false;
         while (!exit) {
